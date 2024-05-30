@@ -12,34 +12,20 @@ const carSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      minLength: 3,
-      maxLength: 50,
+      enum: ["sedan", "hatchback","crossoverSUV","largeSUV"],
     },
     category: {
         type: String,
         required: true,
-        minLength: 3,
-        maxLength: 50,
+        enum: ["small", "medium","crossover","SUV","luxury","commercial"],
       },
-    brands: {
-        type: String,
-      required: true,
-      minLength: 3,
-      maxLength: 50,
-    },
     name: {
         type: String,
         required: true,
         minLength: 3,
         maxLength: 50,
       },
-    features: {
-        type: String,
-        required: true,
-        minLength: 3,
-        maxLength: 50,
-      },
-    branch: {
+    km: {
         type: String,
         required: true,
         minLength: 3,
@@ -53,11 +39,14 @@ const carSchema = new mongoose.Schema(
       },
     image: {
       type: String,
-    }
+    },
+    brands: [{ type: mongoose.Types.ObjectId, ref: "CarBrands" }],
+    branch: [{ type: mongoose.Types.ObjectId, ref: "Branch" }],
+    features: [{ type: mongoose.Types.ObjectId, ref: "Features" }],
   },
   { timestamps: true }
 );
 
-const Course = mongoose.model("Course", courseSchema);
+const Car = mongoose.model("Car", carSchema);
 
-export default Course;
+export default Car;
