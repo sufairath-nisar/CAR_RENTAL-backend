@@ -44,22 +44,18 @@ const clientsSchema = new mongoose.Schema(
       },
     license: {
         type: String,
-        required: true,
         maxLength: 50,
       },
     companyName: {
         type: String,
-        required: true,
         maxLength: 50,
       },
     position: {
         type: String,
-        required: true,
         maxLength: 50,
       },
     trn: {
         type: String,
-        required: true,
         maxLength: 50,
       },
   },
