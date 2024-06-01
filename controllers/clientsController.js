@@ -10,7 +10,7 @@ export const signup = async (req, res) => {
     const clientExist = await Clients.findOne({ email });
     
     
-    if (!clientExist) {
+    if (clientExist) {
       return res.send("User is already exist");
     }
     

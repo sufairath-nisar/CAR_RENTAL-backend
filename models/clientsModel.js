@@ -34,7 +34,7 @@ const clientsSchema = new mongoose.Schema(
         maxLength: 50,
       },
     ph: {
-        type: number,
+        type: Number,
         required: true,
       },
     address: {

@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser())
-app.use("/api/v1/user", clientsRouter);
+app.use("/api/v1/clients", clientsRouter);
 
 const port = 3000;
 connect();
