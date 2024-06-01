@@ -1,13 +1,71 @@
-import bcrypt from "bcrypt";
-import Instructor from "../models/instructorModel.js";
-import { adminToken } from "../utils/generateToken.js";
+import Car from "../models/carModel.js"
+import CarBrands from "../models/carBrandsModel.js"
+import Branch from "../models/branchModel.js"
+import Features from "../models/featuresModel.js"
 
-
-//GET CAR
-export const getCars = async (req, res) => {
-    const cars = await Car.find();
-    res.send(cars);
+//GET ALL CAR DETAILS
+export const getAllCars = async (req, res) => {
+    try{
+        const cars = await Car.find();
+        return res.send(cars);
+    }
+    catch (error) {
+        console.log("Error fetching cars:", error);
+        res.status(500).send("Failed to fetch car details");
+    }   
 };
+
+// FILTER
+export const getCar = async (req, res) => {
+    try {
+        const filters = req.query;
+        const filterCriteria = {};
+
+        
+        if (filters.brand) {
+            const brand = await CarBrands.findOne({ name: filters.brand });
+            if (brand) {
+                filterCriteria.brand = brand._id;
+            }
+        }
+        if (filters.type) {
+            filterCriteria.type = filters.type;
+        }
+        if (filters.minPrice) {
+            filterCriteria.price = { ...filterCriteria.price, $gte: filters.minPrice };
+        }
+        if (filters.maxPrice) {
+            filterCriteria.price = { ...filterCriteria.price, $lte: filters.maxPrice };
+        }
+        if (filters.minKm) {
+            filterCriteria.km = { ...filterCriteria.km, $gte: filters.minKm };
+        }
+        if (filters.maxKm) {
+            filterCriteria.km = { ...filterCriteria.km, $lte: filters.maxKm };
+        }
+        if (filters.branch) {
+            const branch = await Branch.findOne({ name: filters.branch });
+            if (branch) {
+                filterCriteria.branch = branch._id;
+            }
+        }
+        if (filters.features) {
+            const features = await Features.findOne({ description: filters.features });
+            if (features) {
+                filterCriteria.features = features._id;
+            }
+        }
+
+        const cars = await Car.find(filterCriteria);
+        res.send(cars);
+       
+    } 
+    catch (error) {
+        console.log("Error fetching cars:", error);
+        res.status(500).send("Failed to fetch car details");
+    }
+};
+  
 
 //CREATE CAR
 export const createCar = async (req, res) => {
@@ -79,10 +137,9 @@ export const createCar = async (req, res) => {
       console.log("something went wrong", error);
       res.send("failed to add car details");
     }
-  };
+};
 
 //UPDATE CAR DETAILS
-
 export const updateCar = async (req, res) => {
     try{
             const id = req.params.id;
@@ -104,17 +161,23 @@ export const updateCar = async (req, res) => {
         catch (error) {
             console.log("something went wrong", error);
             res.send("failed to update car details");
-          }
+        }
 };
 
 //DELETE CAR DETAILS
-
-export const deleteCourse = async (req, res) => {
-    const id = req.params.id;
-    const deleteId = await Course.deleteOne({ _id: id });
-    if (!deleteId) {
-      return res.send("not deleted");
+export const deleteCar = async (req, res) => {
+    try{
+        const id = req.params.id;
+        const deleteId = await Car.deleteOne({ _id: id });
+        if (!deleteId) {
+          return res.send("not deleted");
+        }
+        res.send("deleted car details");
     }
-    res.send("deleted course");
-  };
+    catch (error) {
+        console.log("something went wrong", error);
+        res.send("failed to update car details");
+    }
+   
+};
 

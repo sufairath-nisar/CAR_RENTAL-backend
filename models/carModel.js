@@ -32,7 +32,7 @@ const carSchema = new mongoose.Schema(
         maxLength: 50,
       },
     price: {
-        type: number,
+        type: String,
         required: true,
         minLength: 3,
         maxLength: 50,

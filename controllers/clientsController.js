@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import Clients from "../models/clientsModel.js";
-import { generateToken } from "../utils/generateToken.js";
+import {clientToken} from "../utils/generateToken.js";
 
 export const signup = async (req, res) => {
   try {
@@ -37,8 +37,7 @@ export const signup = async (req, res) => {
       return res.send("user is not created");
     }
 
-    const token = generateToken(email);
-    
+    const token = clientToken(email);   
     res.cookie("token", token)
     res.send("Signed successfully!");
   } 
@@ -66,7 +65,7 @@ export const signin = async (req, res) => {
       return res.send("Password is not correct");
     }
 
-    const token = generateToken(email);
+    const token = clientToken(email);
     res.cookie("token", token);
     res.send("Logged in!");
   } 
