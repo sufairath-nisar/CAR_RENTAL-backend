@@ -19,7 +19,7 @@ const carSchema = new mongoose.Schema(
         required: true,
         enum: ["small", "medium","crossover","SUV","luxury","commercial"],
       },
-      carName: {
+    carName: {
         type: String,
         required: true,
         minLength: 3,
@@ -40,9 +40,18 @@ const carSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    brand: [{ type: mongoose.Types.ObjectId, ref: "CarBrands" }],
-    branch: [{ type: mongoose.Types.ObjectId, ref: "Branch" }],
-    features: [{ type: mongoose.Types.ObjectId, ref: "Features" }],
+    brand: [{ 
+      type: mongoose.Types.ObjectId, ref: "CarBrands" ,
+      required: true
+    }],
+    branch: [{ 
+      type: mongoose.Types.ObjectId, ref: "Branch",
+      required: true
+    }],
+    features: [{ 
+      type: mongoose.Types.ObjectId, ref: "Features",
+      required: true
+     }],
   },
   { timestamps: true }
 );

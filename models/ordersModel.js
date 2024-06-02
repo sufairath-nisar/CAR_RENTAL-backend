@@ -14,6 +14,11 @@ const ordersSchema = new mongoose.Schema(
         type: String,
         enum: ["self", "driver"],
       },
+    orderStatus: {
+      type : String,
+      enum: ["pending","assigned","confirmed", "completed"],
+      default: "pending"
+    },
     
     clients: [{ type: mongoose.Types.ObjectId, ref: "Clients" }],
     car: [{ type: mongoose.Types.ObjectId, ref: "Car" }],
