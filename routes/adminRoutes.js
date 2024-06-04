@@ -7,6 +7,7 @@ import {
   updateCar,
   deleteCar,
 } from "../controllers/carController.js";
+
 import {
   getAllBranches,
   getBranch,                 
@@ -14,10 +15,16 @@ import {
   updateBranch,
   deleteBranch
 } from "../controllers/branchController.js";
+
+import {signup,signin} from "../controllers/adminController.js";
 import upload from "../middlewares/upload-middleware.js";
 
 
 const adminRouter = express.Router();
+
+adminRouter.post("/signup", signup);
+adminRouter.post("/signin", signin);
+
 
 adminRouter.get("/get-all-cars", getAllCars);
 
@@ -30,6 +37,7 @@ adminRouter.post("/add-car", upload.single('file'), createCar);
 adminRouter.put("/update-car/:id", upload.single('file'), updateCar);
 
 adminRouter.delete("/delete-car/:id",  deleteCar);
+
 
 
 

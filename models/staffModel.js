@@ -50,11 +50,7 @@ const staffSchema = new mongoose.Schema(
         unique: true,
         maxLength: 50,
       },
-      orderStatus: {
-        type: String,
-        required: true,
-        maxLength: 50,
-      },
+      
       orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
   },
   { timestamps: true }

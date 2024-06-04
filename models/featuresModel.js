@@ -3,31 +3,42 @@ import mongoose from "mongoose";
 const featuresSchema = new mongoose.Schema(
   {
     bluetooth: {
-        type:  Boolean
+        type:  Boolean,
+        default: false
+    },
+
+    seats: {
+      type: Number,
     },
 
     leatherSeats: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
     
     navigation: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     alloyWheel: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     applePlay: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     rearCamera: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     keylessEntry: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     doors: {
@@ -35,27 +46,38 @@ const featuresSchema = new mongoose.Schema(
     },
 
     AUX: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     parkingSensors: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     airBags: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     fogLamps: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     cruiseControl: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
     },
 
     MP3Player: {
-      type:  Boolean
+      type:  Boolean,
+      default: false
+    },
+
+    USB: {
+      type:  Boolean,
+      default: false
     },
 
     passengersCapacity: {

@@ -62,10 +62,11 @@ export const getCar = async (req, res) => {
                 filterCriteria.branch = branch._id;
             }
         }
+
         if (filters.features) {
-            const features = await Features.findOne({ description: filters.features });
-            if (features) {
-                filterCriteria.features = features._id;
+            const feature = await Features.findOne(filters.features);
+            if (feature) {
+                filterCriteria.features = feature._id;
             }
         }
 
@@ -110,15 +111,6 @@ export const createCar = async (req, res) => {
             findBrand = new CarBrands({ name: brand });
             await findBrand.save();
         }
-
-       
-        //FIND FEATURES
-        let findFeatures = await Features.findOne({ description: features });
-
-        if (!findFeatures) {
-            findFeatures = new Features({ description: features });
-            await findFeatures.save();
-        }
   
         // FIND BRANCH
         let findBranch = await Branch.findOne({ name: branch});
@@ -126,6 +118,9 @@ export const createCar = async (req, res) => {
         if (!findBranch) {
             return res.send("please add branch details first!");
         }
+
+        //FIND FEATURES
+        let findFeatures = await Features.create(JSON.parse(features));
   
         const createCar = new Car({
             carNumber,
