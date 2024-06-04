@@ -35,7 +35,7 @@ adminRouter.delete("/delete-car/:id",  deleteCar);
 
 adminRouter.get("/get-all-branches", getAllBranches);
 
-adminRouter.get("/get-branch", getBranch);
+adminRouter.get("/get-branch/:id", getBranch);
 
 adminRouter.post("/add-branch", createBranch);
 

@@ -6,6 +6,7 @@ const branchSchema = new mongoose.Schema(
       type: String,
       required: true,
       maxLength: 50,
+      unique: true
     },
     address: {
         type: String,

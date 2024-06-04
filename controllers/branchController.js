@@ -15,14 +15,15 @@ export const getAllBranches = async (req, res) => {
 
 
 //GET A BRANCH DETAILS
-export const getACar = async (req, res) => {
+export const getBranch = async (req, res) => {
   try{
-      const car = await Car.findById(id)
-      res.send(car);
+      const id = req.params.id;
+      const branch = await Branch.findById(id)
+      res.send(branch);
   }
   catch (error) {
-      console.log("Error fetching car:", error);
-      res.status(500).send("Failed to fetch car details");
+      console.log("Error fetching branch:", error);
+      res.status(500).send("Failed to fetch branch details");
   } 
 };
 
@@ -55,14 +56,20 @@ export const createBranch = async (req, res) => {
 };
 
 
+//UPDATE BRANCH DETAILS
 export const updateBranch = async (req, res) => {
     try {
       const id = req.params.id;
       const body = req.body;
-  
+      
       const {  name,address,ph } = body;
-    
-      const updateData = {
+      const existingBranch = await Branch.findOne({ name, _id: id } );
+
+      if (existingBranch) {
+        return res.status(400).send("Branch name cannot be updated"); 
+      }
+      
+        const updateData = {
         name,
         address,
         ph
@@ -88,19 +95,19 @@ export const updateBranch = async (req, res) => {
   };
   
 
-//DELETE CAR DETAILS
+//DELETE BRANCH DETAILS
 export const deleteBranch = async (req, res) => {
     try{
         const id = req.params.id;
         const deleteId = await Car.deleteOne({ _id: id });
         if (!deleteId) {
-          return res.send("not deleted");
+          return res.send("not deleted"); 
         }
         res.send("deleted branch details");
     }
     catch (error) {
         console.log("something went wrong", error);
-        res.send("failed to update branch details");
+        res.send("failed to delete branch details");
     }   
 };
 
