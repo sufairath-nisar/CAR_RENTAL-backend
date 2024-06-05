@@ -12,11 +12,11 @@ export const clientToken = (user) => {
 };
 
 export const adminToken = (user) => {
-  return jwt.sign({ data: user.username, role: user.role }, secret_key, {expiresIn: "1d" });
+  return jwt.sign({ data: user.username, role: "admin" }, secret_key, {expiresIn: "1d" });
 };
 
 export const staffToken = (user) => {
-  return jwt.sign({ data: user.staffId, role: user.role }, secret_key, { expiresIn: "1d" });
+  return jwt.sign({ data: user.staffId, role: "staff" }, secret_key, { expiresIn: "1d" });
 };
 
 

@@ -14,11 +14,7 @@ const adminSchema = new mongoose.Schema(
       minLength: 6,
       required: true
     },
-    role: {
-      type: String,
-      enum: ["admin"],
-      required: true
-    },
+   
 
     staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
     orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],

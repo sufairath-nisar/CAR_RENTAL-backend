@@ -1,20 +1,23 @@
 import bcrypt from "bcrypt";
-import Admin from "../models/adminModel.js";
 import Staff from "../models/staffModel.js"
 import {staffToken} from"../utils/generateToken.js";
 
 
 //signup
-export const signup = async (req, res) => {
+export const signupstaff = async (req, res) => {
   try {
-    const { username, password} = req.body
-    console.log(username);
+   
+    const { email, password, firstName, lastName, staffId, branch, position, ph} = req.body;
+    const staffExist = await Staff.findOne({ email });
+    if (staffExist) {
+      return res.send("Staff is already exist");
+    }
      
     const saltRounds = 10;
     const hashPassword = await bcrypt.hash(password, saltRounds);
 
-    const newStaff = new Admin({
-      username,
+    const newStaff = new Staff({
+      email,
       hashPassword,
       role: "staff",
       firstName,
@@ -25,13 +28,13 @@ export const signup = async (req, res) => {
       ph,
     });
     
-    const newAdminCreated = await newAdmin.save();
+    const newStaffCreated = await newStaff.save();
 
-    if (!newAdminCreated) {
-      return res.send("admin is not created");
+    if (!newStaffCreated) {
+      return res.send("staff is not created");
     }
 
-    const token = adminToken(username);   
+    const token = staffToken(staffId);   
     res.cookie("token", token)
     res.send("Signed successfully!");
   } 
@@ -45,12 +48,12 @@ export const signup = async (req, res) => {
 
 export const signin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const admin = await Admin.findOne({ username });
+    const staff = await Staff.findOne({ staffId });
 
-    if (!admin) {
-      return res.send("Admin is not found");
+    if (!staffId) {
+      return res.send("Staff is not found");
     }
 
     const matchPassword = await bcrypt.compare(password, admin.hashPassword);
@@ -59,7 +62,7 @@ export const signin = async (req, res) => {
       return res.send("Password is not correct");
     }
 
-    const token = adminToken(username);
+    const token = staffToken(username);
     res.cookie("token", token);
     res.send("Logged in!");
   } 

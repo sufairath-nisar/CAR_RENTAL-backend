@@ -3,7 +3,9 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import clientsRouter from "../routes/clientsRoutes.js";
 import adminRouter from "../routes/adminRoutes.js";
+import staffRouter from "../routes/staffRoutes.js"
 import connect from "../config/db.js"
+import staffRouter from "../routes/staffRoutes.js";
 
 dotenv.config();
 
@@ -14,6 +16,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/clients", clientsRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/staff", staffRouter);
 
 const port = 3000;
 connect();
