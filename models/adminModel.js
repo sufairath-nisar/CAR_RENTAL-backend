@@ -4,19 +4,20 @@ const adminSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
       minLength: 3,
       maxLength: 30,
-      unique: true,
+      required: true,
+      unique: true
     },
     hashPassword: {
       type: String,
-      required: true,
       minLength: 6,
+      required: true
     },
     role: {
       type: String,
-      enum: ["admin","staff"]
+      enum: ["admin"],
+      required: true
     },
 
     staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],

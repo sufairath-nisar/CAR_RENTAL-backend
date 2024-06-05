@@ -12,8 +12,8 @@ function authenticateAdmin(req, res, next) {
     if (err) return res.sendStatus(403);
 
     req.user = user;
-    console.log(req.user.username);
-    
+    console.log(req.user.role);
+
     next();
   });
 }

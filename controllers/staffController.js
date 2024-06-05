@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import Admin from "../models/adminModel.js";
-import {adminToken} from"../utils/generateToken.js";
+import Staff from "../models/staffModel.js"
+import {staffToken} from"../utils/generateToken.js";
 
 
 //signup
@@ -12,10 +13,16 @@ export const signup = async (req, res) => {
     const saltRounds = 10;
     const hashPassword = await bcrypt.hash(password, saltRounds);
 
-    const newAdmin = new Admin({
+    const newStaff = new Admin({
       username,
       hashPassword,
-      role: "admin"
+      role: "staff",
+      firstName,
+      lastName,
+      staffId,
+      branch,
+      position,
+      ph,
     });
     
     const newAdminCreated = await newAdmin.save();

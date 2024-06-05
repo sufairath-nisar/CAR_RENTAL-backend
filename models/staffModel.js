@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const staffSchema = new mongoose.Schema(
   {
-    username: {
+    email: {
         type: String,
         required: true,
         unique: true,
@@ -13,6 +13,11 @@ const staffSchema = new mongoose.Schema(
       type: String,
       required: true,
       minLength: 6,
+    },
+    role: {
+      type: String,
+      enum: ["staff"],
+      required: true
     },
     firstName: {
       type: String,
@@ -33,25 +38,25 @@ const staffSchema = new mongoose.Schema(
         minLength: 3,
         maxLength: 10,
       },
-      branch: {
+    branch: {
         type: String,
         required: true,
         minLength: 1,
         maxLength: 50,
       },
-      position: {
+    position: {
         type: String,
         required: true,
         maxLength: 50,
       },
-      ph: {
+    ph: {
         type: String,
         required: true,
         unique: true,
         maxLength: 50,
       },
       
-      orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
+    orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
   },
   { timestamps: true }
 );

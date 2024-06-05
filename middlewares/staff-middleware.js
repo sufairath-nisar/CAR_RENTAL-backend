@@ -12,8 +12,11 @@ function authenticateStaff(req, res, next) {
     if (err) return res.sendStatus(403);
 
     req.user = user;
-    console.log(req.user.staffId);
-
+    console.log(req.user.role);
+    
+    if (req.user.role !== "staff" && req.user.role !== "admin") {
+      return res.send("not authenticated");
+    }
     next();
   });
 }
