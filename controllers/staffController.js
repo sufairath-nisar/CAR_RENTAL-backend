@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import Staff from "../models/staffModel.js"
+import Branch from "../models/branchModel.js";
 import {staffToken} from"../utils/generateToken.js";
 
 
@@ -9,19 +10,19 @@ export const signinStaff = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const staff = await Staff.findOne({ staffId });
+    const staff = await Staff.findOne({ email });
 
-    if (!staffId) {
+    if (!email) {
       return res.send("Staff is not found");
     }
 
-    const matchPassword = await bcrypt.compare(password, admin.hashPassword);
+    const matchPassword = await bcrypt.compare(password, staff.hashPassword);
 
     if (!matchPassword) {
       return res.send("Password is not correct");
     }
 
-    const token = staffToken(username);
+    const token = staffToken(email);
     res.cookie("token", token);
     res.send("Logged in!");
   } 
@@ -59,14 +60,21 @@ export const signupStaff = async (req, res) => {
         position,
         ph,
       });
-      
-      const newStaffCreated = await newStaff.save();
+
+      const branchNameLowerCase = branch.toLowerCase();
+      let findBranch = await Branch.findOne({ name: { $regex: new RegExp(`^${branchNameLowerCase}$`, 'i') } });
   
-      if (!newStaffCreated) {
-        return res.send("staff details are not added");
-      }
-  
-      return res.send(newStaffCreated);
+      if (!findBranch) {
+            return res.send("Branch is not added!");
+        }
+
+        else{
+                const newStaffCreated = await newStaff.save();
+                if (!newStaffCreated) {
+                return res.send("staff details are not added");
+        }
+        return res.send(newStaffCreated);
+      }  
     } 
     catch (error) {
       console.log(error, "Something wrong");
@@ -75,26 +83,44 @@ export const signupStaff = async (req, res) => {
   };
   
   //update staff details
-  export const updateStaff = async (req, res) => {
-    const id = req.params.id;
-    
-    const updateStaff = await Staff.findOneAndUpdate(
-      { _id: id },
-      { firstName, lastName, staffId, branch, position, ph },
-      {
-        new: true,
-      }
-    );
-  
-    if (!updateStaff) {
-      return res.send("Staff is not updated");
+ export const updateStaff = async (req, res) => {
+    try{
+        const id = req.params.id;
+        const body = req.body;
+          
+        const {  firstName, lastName, staffId, branch, position, ph } = body;
+        const updateData = {
+            firstName, 
+            lastName, 
+            staffId, 
+            branch, 
+            position, 
+            ph
+        };
+        
+        const updateBranch = await Staff.findOneAndUpdate(
+          { _id: id },
+           updateData,
+          {
+            new: true,
+          }
+        );
+      
+        if (!updateBranch) {
+          return res.send("Staff is not updated");
+        }
+        console.log(updateBranch);
+        return res.send(updateBranch);
     }
-    console.log(updateStaff);
-    return res.send(updateStaff);
-  };
+    catch (error) {
+        console.log("Something went wrong", error);
+        res.status(500).send("Failed to update branch details");
+      }
+   
+};
   
   //get all staff details
-  export const getAllStaff = async (req, res) => {
+export const getAllStaff = async (req, res) => {
     try{
         const staff = await Staff.find();
         return res.send(staff);
@@ -103,26 +129,26 @@ export const signupStaff = async (req, res) => {
         console.log("Error fetching all staff members:", error);
         res.status(500).send("Failed to fetch staff details");
     }   
-  };
+};
   
   //get a staff details
-  export const getStaff = async (req, res) => {
+export const getStaff = async (req, res) => {
     try{
         const id = req.params.id;
         const staff = await Staff.findById(id)
-        res.send(staffRouter);
+        res.send(staff);
     }
     catch (error) {
         console.log("Error fetching staff details:", error);
         res.status(500).send("Failed to fetch staff details");
     } 
-  };
+};
   
   //delete staff 
-  export const deleteStaff = async (req, res) => {
+export const deleteStaff = async (req, res) => {
     try{
         const id = req.params.id;
-        const deleteId = await Car.deleteOne({ _id: id });
+        const deleteId = await Staff.deleteOne({ _id: id });
         if (!deleteId) {
           return res.send("not deleted"); 
         }
@@ -132,5 +158,5 @@ export const signupStaff = async (req, res) => {
         console.log("something went wrong", error);
         res.send("failed to delete staff details");
     }   
-  };
+};
   

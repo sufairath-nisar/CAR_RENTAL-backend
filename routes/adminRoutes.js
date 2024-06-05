@@ -18,7 +18,6 @@ import {
 
 import {
   signupStaff,
-  signinStaff,
   getAllStaff,
   getStaff,                 
   updateStaff,
@@ -61,7 +60,6 @@ adminRouter.delete("/delete-branch/:id",  deleteBranch);
 
 //STAFF
 adminRouter.post("/signup-staff", signupStaff);
-adminRouter.post("/signin-staff", signinStaff);
 
 adminRouter.get("/get-all-staff", getAllStaff);
 adminRouter.get("/get-staff/:id", getStaff);

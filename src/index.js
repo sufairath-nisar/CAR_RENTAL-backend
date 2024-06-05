@@ -5,7 +5,7 @@ import clientsRouter from "../routes/clientsRoutes.js";
 import adminRouter from "../routes/adminRoutes.js";
 import staffRouter from "../routes/staffRoutes.js"
 import connect from "../config/db.js"
-import staffRouter from "../routes/staffRoutes.js";
+
 
 dotenv.config();
 

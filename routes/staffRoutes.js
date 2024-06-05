@@ -1,14 +1,11 @@
 import express from "express";
 
-import {signin,
-        signupstaff
-} from "../controllers/staffController.js";
+import {signinStaff} from "../controllers/staffController.js";
 
 
 const staffRouter = express.Router();
 
-staffRouter.post("/signupstaff", signupstaff);
-staffRouter.post("/signin", signin);
+staffRouter.post("/signin-staff", signinStaff);
 
 
 export default staffRouter;

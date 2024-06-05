@@ -4,11 +4,11 @@ const ordersSchema = new mongoose.Schema(
   {
     pickupDate: {
         type: DateTime,
-        required: true,
+        // required: true,
       },
     dropOffDate: {
         type: DateTime,
-        required: true,
+        // required: true,
       },
     drivenMethod: {
         type: String,

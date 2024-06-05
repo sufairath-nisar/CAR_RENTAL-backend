@@ -58,6 +58,12 @@ const clientsSchema = new mongoose.Schema(
         type: String,
         maxLength: 50,
       },
+      ph: {
+        type: String,
+        required: true,
+        maxLength: 20,
+        match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number']
+      }
   },
   { timestamps: true }
 );

@@ -47,8 +47,8 @@ const staffSchema = new mongoose.Schema(
     ph: {
         type: String,
         required: true,
-        unique: true,
-        maxLength: 50,
+        maxLength: 20,
+        match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number']
       },
       
     orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
