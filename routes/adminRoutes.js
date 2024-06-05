@@ -17,15 +17,15 @@ import {
 } from "../controllers/branchController.js";
 
 import {
-  signup,
-  signin,
+  signupStaff,
+  signinStaff,
   getAllStaff,
   getStaff,                 
-  createStaff,
   updateStaff,
   deleteStaff
-} from "../controllers/adminController.js";
+} from "../controllers/staffController.js";
 
+import { signup, signin } from "../controllers/adminController.js";
 import upload from "../middlewares/upload-middleware.js";
 
 
@@ -60,7 +60,14 @@ adminRouter.delete("/delete-branch/:id",  deleteBranch);
 
 
 //STAFF
-staffRouter.post("/signupstaff", signupstaff);
+adminRouter.post("/signup-staff", signupStaff);
+adminRouter.post("/signin-staff", signinStaff);
 
+adminRouter.get("/get-all-staff", getAllStaff);
+adminRouter.get("/get-staff/:id", getStaff);
+
+adminRouter.put("/update-staff/:id", updateStaff);
+
+adminRouter.delete("/delete-staff/:id",  deleteStaff);
 
 export default adminRouter;

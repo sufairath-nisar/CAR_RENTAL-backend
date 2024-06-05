@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import Clients from "../models/clientsModel.js";
 import {clientToken} from "../utils/generateToken.js";
 
+
+//signup
 export const signup = async (req, res) => {
   try {
     const { email, password, firstName, lastName, nationality, ph, address, license, companyName, position, trn} = req.body
@@ -48,7 +50,6 @@ export const signup = async (req, res) => {
 };
 
 //signin
-
 export const signin = async (req, res) => {
   try {
     const { email, password } = req.body;

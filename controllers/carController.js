@@ -149,7 +149,7 @@ export const createCar = async (req, res) => {
     }
 };
 
-
+//UPDATE CAR
 export const updateCar = async (req, res) => {
     try {
       const id = req.params.id;
