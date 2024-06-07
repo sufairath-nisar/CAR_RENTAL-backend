@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
   {
-    method: {
+    paymentMmethod: {
         type: String,
         required: true,
        enum:["cash","crediCard"]
@@ -13,10 +13,10 @@ const paymentSchema = new mongoose.Schema(
     },
     cardNum: {
         type: Number,
-        required: true,
         maxLength: 50,
         minLength:8
-    }
+    },
+    order: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
    
   },
   { timestamps: true }

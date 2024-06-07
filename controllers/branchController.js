@@ -84,7 +84,7 @@ export const updateBranch = async (req, res) => {
       );
   
       if (!updateBranch) {
-        return res.status(404).send("Branch not updated");
+        return res.status(404).send("Branch is not updated");
       }
       return res.status(200).send(updateBranch);
     } 
@@ -92,7 +92,7 @@ export const updateBranch = async (req, res) => {
       console.log("Something went wrong", error);
       res.status(500).send("Failed to update branch details");
     }
-  };
+};
   
 
 //DELETE BRANCH DETAILS

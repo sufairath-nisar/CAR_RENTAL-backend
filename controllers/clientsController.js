@@ -1,6 +1,9 @@
 import bcrypt from "bcrypt";
 import Clients from "../models/clientsModel.js";
+import Car from "../models/carModel.js"
 import {clientToken} from "../utils/generateToken.js";
+import Orders from "../models/ordersModel.js";
+
 
 
 //signup
@@ -75,3 +78,50 @@ export const signin = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+//create order
+export const createOrders = async (req, res) => {
+  try {
+      console.log("hitted");
+      const body = req.body;
+      console.log(body, "body");
+
+      const { pickupDate,dropOffDate,pickupTime,dropoffTime,drivenMethod,location,orderStatus,car,client} = body;
+
+      //check client
+      const findClient = await Clients.findById(client);
+      if (!findClient) {
+        return res.send("Client is not found!");
+      }
+     
+      // check car
+      const findCar = await Car.findById(car);
+      console.log(findCar);
+      if (!findCar) {
+        return res.send("Car is not found!");
+      }
+
+      const createOrder = new Orders({
+        pickupDate,
+        dropOffDate,
+        pickupTime,
+        dropoffTime,
+        drivenMethod,
+        location,
+        orderStatus,
+        car : findCar._id,
+        client : findClient._id
+      });
+           
+      const newOrderCreated = await createOrder.save();
+      if (!newOrderCreated) {
+        return res.send("order details are not added");
+      }
+      return res.send(newOrderCreated);     
+  } 
+  catch (error) {
+    console.log("something went wrong", error);
+    res.send("failed to add order details");
+  }
+};
+

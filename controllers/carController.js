@@ -19,14 +19,21 @@ export const getAllCars = async (req, res) => {
 //GET A CAR DETAILS
 export const getACar = async (req, res) => {
     try{
-        const car = await Car.findById(id)
+        const id = req.params.id; 
+        console.log("Requested car ID:", id);
+        const car = await Car.findById(id);
+        console.log(car);
+        if (!car) {
+            return res.status(404).send("Car not found");
+        }
+
         res.send(car);
     }
     catch (error) {
         console.log("Error fetching car:", error);
         res.status(500).send("Failed to fetch car details");
     } 
-  };
+};
 
 // FILTER
 export const getCar = async (req, res) => {

@@ -3,27 +3,53 @@ import mongoose from "mongoose";
 const ordersSchema = new mongoose.Schema(
   {
     pickupDate: {
-        type: DateTime,
-        // required: true,
-      },
+      type: Date,
+      required: true,
+    },
+
     dropOffDate: {
-        type: DateTime,
-        // required: true,
-      },
+        type: Date,
+        required: true,
+    },
+
+    pickupTime: {
+      type:  String,
+      required: true
+    },
+
+    dropoffTime: {
+      type: String,
+      required: true
+    },
+
     drivenMethod: {
         type: String,
         enum: ["self", "driver"],
-      },
+        default: "self",
+        required: true,
+    },
+
+    location: {
+        type: { 
+            type: String, 
+            default: 'Point' 
+        },
+        coordinates:{
+            type: [Number],
+            required: true
+        }
+    },
+
     orderStatus: {
       type : String,
-      enum: ["pending","assigned","confirmed", "completed"],
+      enum: ["pending","assigned","confirmed", "pickup completed", "dropoff completed"],
+      required: true,
       default: "pending"
     },
     
-    clients: [{ type: mongoose.Types.ObjectId, ref: "Clients" }],
     car: [{ type: mongoose.Types.ObjectId, ref: "Car" }],
-    location: [{ type: mongoose.Types.ObjectId, ref: "Location" }],
-    payment: [{ type: mongoose.Types.ObjectId, ref: "Payment" }],
+    client: [{ type: mongoose.Types.ObjectId, ref: "Clients " }],
+    
   },
   { timestamps: true }
 );

@@ -15,7 +15,7 @@ const adminSchema = new mongoose.Schema(
       required: true
     },
    
-
+    car: [{ type: mongoose.Types.ObjectId, ref: "Car" }],
     staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
     orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
   },
