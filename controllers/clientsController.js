@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
+import { cloudinaryInstance } from "../config/cloudinary.js";
 import Clients from "../models/clientsModel.js";
 import Car from "../models/carModel.js"
 import {clientToken} from "../utils/generateToken.js";
 import Orders from "../models/ordersModel.js";
+import Payment from "../models/paymentModel.js";
 
 
 
@@ -124,4 +126,65 @@ export const createOrders = async (req, res) => {
     res.send("failed to add order details");
   }
 };
+
+
+//create payment
+export const createPayment = async (req, res) => {
+  try {
+     
+      console.log("hitted");
+      if(!req.file) {
+        return res.status(400).send("file is not visible")
+        }
+      
+      cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+        if (err) {
+            console.log(err, "error");
+            return res.status(500).json({
+            success: false,
+            message: "Error uploading file to cloudinary",
+            });
+        }
+    
+      const imageUrl = result.secure_url;
+      const body = req.body;
+      console.log(body, "body");
+
+      const { paymentMethod, cardNum, order} = body;
+
+      //check order
+      const findOrder = await Orders.findById(order);
+      if (!findOrder) {
+        return res.send("Please make an order!");
+      }
+   
+      const createPayment = new Payment({
+        paymentMethod,
+        cardNum,
+        proof : imageUrl,
+        order : findOrder._id
+      });
+           
+      const newPaymentCreated = await createPayment.save();
+
+      if (!newPaymentCreated) {
+        return res.send("Payment details are not added");
+      }
+
+      if (findOrder.payment === undefined) { // Check if there's no payment field yet
+        findOrder.payment = newPaymentCreated._id;
+        await findOrder.save(); // Persist the updated order (optional)
+      }
+      return res.send(newPaymentCreated);    
+
+    });
+
+  } 
+  catch (error) {
+    console.log("something went wrong", error);
+    res.send("failed to add payment details");
+  }
+};
+
+
 

@@ -24,7 +24,13 @@ import {
   deleteStaff
 } from "../controllers/staffController.js";
 
-import { signup, signin, getAllOrders, updateOrders } from "../controllers/adminController.js";
+import { signup, 
+         signin, 
+         getAllOrders, 
+         updateOrders,
+         sortOrders,
+         filterOrders } from "../controllers/adminController.js";
+
 import upload from "../middlewares/upload-middleware.js";
 
 
@@ -41,7 +47,7 @@ adminRouter.get("/get-car", getCar);
 
 adminRouter.post("/add-car", upload.single('file'), createCar);
 
-adminRouter.put("/update-car/:id", upload.single('file'), updateCar);
+adminRouter.put("/update-car", upload.single('file'), updateCar);
 
 adminRouter.delete("/delete-car/:id",  deleteCar);
 
@@ -69,8 +75,10 @@ adminRouter.put("/update-staff/:id", updateStaff);
 adminRouter.delete("/delete-staff/:id",  deleteStaff);
 
 
-//ORDERS
+//ORDERS  
 adminRouter.get("/get-all-orders", getAllOrders);
 adminRouter.put("/update-order/:id", updateOrders);
+adminRouter.get("/filter-orders", filterOrders);
+adminRouter.get("/sort-orders", sortOrders);
 
 export default adminRouter;

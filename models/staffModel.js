@@ -50,8 +50,7 @@ const staffSchema = new mongoose.Schema(
         maxLength: 20,
         match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number']
       },
-      
-    orders: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
+    orders: [{ type: mongoose.Types.ObjectId, ref: 'Orders' }],
   },
   { timestamps: true }
 );

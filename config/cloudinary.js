@@ -7,3 +7,5 @@ cloudinary.v2.config({
 });
 
 export const cloudinaryInstance = cloudinary.v2;
+
+

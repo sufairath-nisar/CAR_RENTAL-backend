@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
   {
-    paymentMmethod: {
+    paymentMethod: {
         type: String,
         required: true,
        enum:["cash","crediCard"]
     },
     proof: {
         type: String,
-        required: true,
+        
     },
     cardNum: {
         type: Number,

@@ -47,8 +47,10 @@ const ordersSchema = new mongoose.Schema(
       default: "pending"
     },
     
+    payment: [{ type: mongoose.Types.ObjectId, ref: "Payment" }],
+    staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
     car: [{ type: mongoose.Types.ObjectId, ref: "Car" }],
-    client: [{ type: mongoose.Types.ObjectId, ref: "Clients " }],
+    client: [{ type: mongoose.Types.ObjectId, ref: "Clients" }],
     
   },
   { timestamps: true }

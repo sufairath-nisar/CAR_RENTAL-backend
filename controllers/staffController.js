@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import Staff from "../models/staffModel.js"
+import Staff from "../models/staffModel.js";
+import Orders from "../models/ordersModel.js";
 import Branch from "../models/branchModel.js";
 import {staffToken} from"../utils/generateToken.js";
 
@@ -82,7 +83,7 @@ export const signupStaff = async (req, res) => {
     }
   };
   
-  //update staff details
+//update staff details
  export const updateStaff = async (req, res) => {
     try{
         const id = req.params.id;
@@ -119,7 +120,7 @@ export const signupStaff = async (req, res) => {
    
 };
   
-  //get all staff details
+//get all staff details
 export const getAllStaff = async (req, res) => {
     try{
         const staff = await Staff.find();
@@ -131,7 +132,7 @@ export const getAllStaff = async (req, res) => {
     }   
 };
   
-  //get a staff details
+//get a staff details
 export const getStaff = async (req, res) => {
     try{
         const id = req.params.id;
@@ -144,7 +145,7 @@ export const getStaff = async (req, res) => {
     } 
 };
   
-  //delete staff 
+//delete staff 
 export const deleteStaff = async (req, res) => {
     try{
         const id = req.params.id;
@@ -159,4 +160,76 @@ export const deleteStaff = async (req, res) => {
         res.send("failed to delete staff details");
     }   
 };
+
+//get assigned orders
+export const getAssignedOrders = async (req, res) => {
+  try {
+    const staffId = req.params.id; 
+
+    const staff = await Staff.findById(staffId);
+    if (!staff) {
+      return res.send("Staff not found");
+    }
+    
+    const orders = await Orders.find({ staff: staff._id }).populate("car client").sort({ pickupDate: 1 });
+
+    return res.send(orders);
+  } catch (error) {
+    console.log("Error fetching assigned orders:", error);
+    res.status(500).send("Failed to fetch assigned orders");
+  }
+};
+
+//update order
+export const updateOrderByStaff = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { orderStatus, staffId } = req.body;
+
+    const existingOrder = await Orders.findById(id);
+    if (!existingOrder) {
+       return res.status(404).send("Order is not found");
+    }
+
+    if (staffId) {
+      const staffExists = await Staff.findById(staffId);
+      if (!staffExists) {
+        return res.status(404).send("Staff member is not found");
+      }
+    }
+
+    const allowedStatuses = ["confirmed", "pickup completed", "dropoff completed"];
+    
+    if (orderStatus && !allowedStatuses.includes(orderStatus)) {
+      return res.status(400).send("Invalid order status. Staff can only update to 'confirmed', 'pickup completed', or 'dropoff completed'.");
+    }
+
+    const updateData = {
+      orderStatus,
+    };
+
+    if (staffId) {
+      updateData.staff = staffId;
+    }
+
+    const updatedOrder = await Orders.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    ).populate('staff'); 
+
+    if (!updatedOrder) {
+      return res.status(404).send("Order is not updated");
+    }
+
+    return res.status(200).send(updatedOrder);
+  } 
+  catch (error) {
+    console.log("Something went wrong", error);
+    res.status(500).send("Failed to update order status");
+  }
+};
+
+
+
   
