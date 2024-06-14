@@ -5,7 +5,7 @@ const paymentSchema = new mongoose.Schema(
     paymentMethod: {
         type: String,
         required: true,
-       enum:["cash","crediCard"]
+       enum:["cash","credit card"]
     },
     proof: {
         type: String,

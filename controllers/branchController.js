@@ -1,5 +1,5 @@
 import Branch from "../models/branchModel.js";
-
+import Car from "../models/carModel.js";
 
 //GET ALL BRANCH DETAILS
 export const getAllBranches = async (req, res) => {
@@ -65,7 +65,7 @@ export const updateBranch = async (req, res) => {
       const {  name,address,ph } = body;
       const existingBranch = await Branch.findOne({ name, _id: id } );
 
-      if (existingBranch) {
+      if (!existingBranch) {
         return res.status(400).send("Branch name cannot be updated"); 
       }
       

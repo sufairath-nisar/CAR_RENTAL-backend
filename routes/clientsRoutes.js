@@ -13,6 +13,6 @@ clientRouter.post("/create-order", createOrders);
 
 clientRouter.get("/get-car", getCar); 
 
-clientRouter.post("/add-payment/:id",upload.single('file'), createPayment);
+clientRouter.post("/add-payment",upload.single('file'), createPayment);
 
 export default clientRouter;

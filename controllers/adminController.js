@@ -66,7 +66,10 @@ export const signin = async (req, res) => {
 //get all orders
 export const getAllOrders = async (req, res) => {
   try{
-      const orders = await Orders.find();
+      const orders = await Orders.find()
+      .populate('payment')
+      .populate('car')
+      .populate('client');
       return res.send(orders);
   }
   catch (error) {

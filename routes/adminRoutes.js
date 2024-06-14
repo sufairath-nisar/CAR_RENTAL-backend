@@ -47,7 +47,7 @@ adminRouter.get("/get-car", getCar);
 
 adminRouter.post("/add-car", upload.single('file'), createCar);
 
-adminRouter.put("/update-car", upload.single('file'), updateCar);
+adminRouter.put("/update-car/:id", upload.single('file'), updateCar);
 
 adminRouter.delete("/delete-car/:id",  deleteCar);
 

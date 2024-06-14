@@ -149,8 +149,12 @@ export const createPayment = async (req, res) => {
       const imageUrl = result.secure_url;
       const body = req.body;
       console.log(body, "body");
+      
+      // const { paymentMethod, cardNum, order} = body;
+      const paymentMethod = body.paymentMethod.replace(/"/g, '').trim();
+      const cardNum = body.cardNum.replace(/"/g, '').trim();
+      const order = body.order.replace(/"/g, '').trim();
 
-      const { paymentMethod, cardNum, order} = body;
 
       //check order
       const findOrder = await Orders.findById(order);
@@ -171,9 +175,9 @@ export const createPayment = async (req, res) => {
         return res.send("Payment details are not added");
       }
 
-      if (findOrder.payment === undefined) { // Check if there's no payment field yet
+      if (findOrder.payment === undefined) { 
         findOrder.payment = newPaymentCreated._id;
-        await findOrder.save(); // Persist the updated order (optional)
+        await findOrder.save(); 
       }
       return res.send(newPaymentCreated);    
 
