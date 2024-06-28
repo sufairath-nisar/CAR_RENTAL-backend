@@ -109,7 +109,7 @@ export const createCar = async (req, res) => {
         const body = req.body;
         console.log(body, "body");
   
-        const { carNumber, type, category, carName, km, price, brand, branch, features} = body;
+        const { carNumber, type, category, carName, km, priceperday,priceperweek,pricepermonth, brand, branch, features} = body;
 
        //FIND BRAND
         let findBrand = await CarBrands.findOne({ name: brand });
@@ -135,7 +135,9 @@ export const createCar = async (req, res) => {
             category,
             carName,
             km,
-            price,
+            priceperday,
+            priceperweek,
+            pricepermonth,
             brand: findBrand._id,
             branch: findBranch._id,
             features:  findFeatures._id,
@@ -162,7 +164,7 @@ export const updateCar = async (req, res) => {
       const id = req.params.id;
       const body = req.body;
   
-      const { carNumber, type, category, carName, km, price, brand, branch, features } = body;
+      const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
   
       let imageUrl;
       
@@ -193,7 +195,9 @@ export const updateCar = async (req, res) => {
         category,
         carName,
         km,
-        price,
+        priceperday,
+        priceperweek,
+        pricepermonth,
         brand: findBrand._id,
         branch: findBranch._id,
         features: findFeatures._id,

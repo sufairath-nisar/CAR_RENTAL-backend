@@ -31,7 +31,19 @@ const carSchema = new mongoose.Schema(
         minLength: 3,
         maxLength: 50,
       },
-    price: {
+    priceperday: {
+        type: String,
+        required: true,
+        minLength: 3,
+        maxLength: 50,
+      },
+    priceperweek: {
+        type: String,
+        required: true,
+        minLength: 3,
+        maxLength: 50,
+      },
+    pricepermonth: {
         type: String,
         required: true,
         minLength: 3,

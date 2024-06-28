@@ -11,7 +11,7 @@ import Payment from "../models/paymentModel.js";
 //signup
 export const signup = async (req, res) => {
   try {
-    const { email, password, firstName, lastName, nationality, ph, address, license, companyName, position, trn} = req.body
+    const { email, password, firstName, lastName, role, nationality, ph, address, license, companyName, position, trn} = req.body
     console.log(email);
  
     const clientExist = await Clients.findOne({ email });
@@ -29,6 +29,7 @@ export const signup = async (req, res) => {
       firstName,
       lastName,
       hashPassword,
+      role,
       nationality,
       ph,
       address,

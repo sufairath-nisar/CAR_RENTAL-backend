@@ -17,6 +17,7 @@ const clientsSchema = new mongoose.Schema(
     role: {
         type: String,
         enum: ["personal", "corporate"],
+        required: true
       },
     firstName: {
       type: String,
@@ -33,10 +34,6 @@ const clientsSchema = new mongoose.Schema(
         required: true,
         maxLength: 50,
       },
-    ph: {
-        type: Number,
-        required: true,
-      },
     address: {
         type: String,
         required: true,
@@ -45,6 +42,7 @@ const clientsSchema = new mongoose.Schema(
     license: {
         type: String,
         maxLength: 50,
+        required: true
       },
     companyName: {
         type: String,

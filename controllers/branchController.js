@@ -111,3 +111,21 @@ export const deleteBranch = async (req, res) => {
     }   
 };
 
+// GET BRANCHES BY ADDRESS
+export const getBranchesByAddress = async (req, res) => {
+  try {
+    const addressQuery = req.query.address;
+    if (!addressQuery) {
+      return res.status(400).send('Address query parameter is required');
+    }
+
+    const branches = await Branch.find({
+      address: { $regex: addressQuery, $options: 'i' }
+    });
+    res.send(branches);
+  } catch (error) {
+    console.log('Error fetching branches by address:', error);
+    res.status(500).send('Failed to fetch branch details');
+  }
+};
+
