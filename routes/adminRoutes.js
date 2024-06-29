@@ -45,7 +45,7 @@ adminRouter.get("/get-all-cars", getAllCars);
 adminRouter.get("/get-a-car/:id", getACar);
 adminRouter.get("/get-car", getCar);
 
-adminRouter.post("/add-car", upload.single('file'), createCar);
+adminRouter.post("/add-car", upload.single('image'), createCar);
 
 adminRouter.put("/update-car/:id", upload.single('file'), updateCar);
 

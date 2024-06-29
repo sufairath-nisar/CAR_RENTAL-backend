@@ -9,6 +9,7 @@ const featuresSchema = new mongoose.Schema(
 
     seats: {
       type: Number,
+      default: 4
     },
 
     leatherSeats: {
@@ -42,7 +43,8 @@ const featuresSchema = new mongoose.Schema(
     },
 
     doors: {
-      type:  Number
+      type:  Number,
+      default: 4
     },
 
     AUX: {
@@ -81,7 +83,8 @@ const featuresSchema = new mongoose.Schema(
     },
 
     passengersCapacity: {
-      type:  Number
+      type:  Number,
+      default: 4 
     },
   },
   { timestamps: true }

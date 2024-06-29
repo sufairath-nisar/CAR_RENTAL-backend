@@ -87,49 +87,106 @@ export const getCar = async (req, res) => {
     }
 };
   
-
-//CREATE CAR
+// CREATE CAR
 export const createCar = async (req, res) => {
     try {
-      console.log("hitted");
-      if(!req.file) {
-      return res.status(400).send("file is not visible")
-      }
+        if (!req.file) {
+            return res.status(400).send("Image file is required");
+        }
 
         cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+            console.log("{test");
             if (err) {
-                console.log(err, "error");
+                console.log(err);
                 return res.status(500).json({
-                success: false,
-                message: "Error uploading file to cloudinary",
+                    success: false,
+                    message: "Error uploading file to cloudinary",
                 });
             }
-        
-        const imageUrl = result.secure_url;
+
+            const imageUrl = result.url;
+            const body = req.body;
+
+            const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
+
+            // FIND BRAND
+            let findBrand = await CarBrands.findOne({ name: brand });
+
+            if (!findBrand) {
+                findBrand = new CarBrands({ name: brand });
+                await findBrand.save();
+            }
+
+            // FIND BRANCh
+            let findBranch = await Branch.findOne({ name: branch });
+
+            if (!findBranch) {
+                return res.status(400).send("Please add branch details first!");
+            }
+
+            // FIND FEATURES
+            let findFeatures = await Features.create(JSON.parse(features));
+
+            const createCar = new Car({
+                carNumber,
+                type,
+                category,
+                carName,
+                km,
+                priceperday,
+                priceperweek,
+                pricepermonth,
+                brand: findBrand._id,
+                // branch: findBranch._id,
+                features: findFeatures._id,
+                image: imageUrl,
+            });
+
+            const newCarCreated = await createCar.save();
+            if (!newCarCreated) {
+                return res.send("Failed to add car details");
+            }
+            return res.send(newCarCreated);
+        });
+    } catch (error) {
+        console.log("Something went wrong", error);
+        res.status(500).send("Failed to add car details");
+    }
+};
+
+// UPDATE CAR
+export const updateCar = async (req, res) => {
+    try {
+        const id = req.params.id;
         const body = req.body;
-        console.log(body, "body");
-  
-        const { carNumber, type, category, carName, km, priceperday,priceperweek,pricepermonth, brand, branch, features} = body;
 
-       //FIND BRAND
-        let findBrand = await CarBrands.findOne({ name: brand });
+        let imageUrl;
 
-        if (!findBrand) {
-            findBrand = new CarBrands({ name: brand });
-            await findBrand.save();
-        }
-  
-        // FIND BRANCH
-        let findBranch = await Branch.findOne({ name: branch});
-  
-        if (!findBranch) {
-            return res.send("please add branch details first!");
+        // Check if file was provided for update
+        if (req.file) {
+            cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error uploading file to cloudinary",
+                    });
+                }
+                imageUrl = result.secure_url;
+            });
         }
 
-        //FIND FEATURES
-        let findFeatures = await Features.create(JSON.parse(features));
-  
-        const createCar = new Car({
+        const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
+
+        const findBrand = await CarBrands.findById(brand);
+        const findFeatures = await Features.findById(features);
+        const findBranch = await Branch.findById(branch);
+
+        if (!findBrand || !findFeatures || !findBranch) {
+            return res.status(400).send("Invalid brand, feature, or branch provided");
+        }
+
+        const updateData = {
             carNumber,
             type,
             category,
@@ -140,91 +197,28 @@ export const createCar = async (req, res) => {
             pricepermonth,
             brand: findBrand._id,
             branch: findBranch._id,
-            features:  findFeatures._id,
-            image: imageUrl,
-        });
-        
-        
-        const newCarCreated = await createCar.save();
-        if (!newCarCreated) {
-          return res.send("car details are not added");
+            features: findFeatures._id,
+        };
+
+        if (imageUrl) {
+            updateData.image = imageUrl;
         }
-        return res.send(newCarCreated);
-      });
-    } 
-    catch (error) {
-      console.log("something went wrong", error);
-      res.send("failed to add car details");
+
+        const updateCar = await Car.findOneAndUpdate(
+            { _id: id },
+            updateData,
+            { new: true }
+        );
+
+        if (!updateCar) {
+            return res.status(404).send("Car not updated");
+        }
+        return res.status(200).send(updateCar);
+    } catch (error) {
+        console.log("Something went wrong", error);
+        res.status(500).send("Failed to update car details");
     }
 };
-
-//UPDATE CAR
-export const updateCar = async (req, res) => {
-    try {
-      const id = req.params.id;
-      const body = req.body;
-  
-      const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
-  
-      let imageUrl;
-      
-      cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
-            if (err) {
-                console.log(err, "error");
-                return res.status(500).json({
-                success: false,
-                message: "Error uploading file to cloudinary",
-                });
-            }
-        })
-
-        
-        const findBrand = await CarBrands.findById(brand);
-        
-        const findFeatures = await Features.findById(features);
-
-        const findBranch = await Branch.findById(branch);
-
-        if (!findBrand || !findFeatures || !findBranch) {
-            return res.status(400).send("Invalid brand, feature, or branch provided");
-          }
-
-      const updateData = {
-        carNumber,
-        type,
-        category,
-        carName,
-        km,
-        priceperday,
-        priceperweek,
-        pricepermonth,
-        brand: findBrand._id,
-        branch: findBranch._id,
-        features: findFeatures._id,
-      };
-  
-      if (imageUrl) {
-        updateData.image = imageUrl;
-      }
-  
-      const updateCar = await Car.findOneAndUpdate(
-        { _id: id },
-        updateData,
-        {
-          new: true,
-        }
-      );
-  
-      if (!updateCar) {
-        return res.status(404).send("Car not updated");
-      }
-      return res.status(200).send(updateCar);
-    } 
-    catch (error) {
-      console.log("Something went wrong", error);
-      res.status(500).send("Failed to update car details");
-    }
-  };
   
 
 //DELETE CAR DETAILS
@@ -244,3 +238,50 @@ export const deleteCar = async (req, res) => {
    
 };
 
+//CARS BY TYPE, BRAND AND CATEGORY
+
+export const getCarsByType = async (req, res) => {
+    try {
+        const { type } = req.params;
+        console.log(req.params);
+        const cars = await Car.find({ type }).populate('features'); // Populate features if it's a reference in your model
+        res.json(cars);
+    } catch (error) {
+        console.log("Error fetching cars by type:", error);
+        res.status(500).json({ message: 'Error fetching cars by type', error });
+    }
+};
+
+export const getCarsByCategory = async (req, res) => {
+    try {
+        const { category } = req.params;
+        const cars = await Car.find({ category });
+        res.json(cars);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching cars by category', error });
+    }
+};
+
+export const getCarsByBrand = async (req, res) => {
+    try {
+        const { brand } = req.params;
+
+        // Find the CarBrands document by name
+        const carBrand = await CarBrands.findOne({ name: brand });
+
+        if (!carBrand) {
+            return res.status(404).json({ message: 'Car brand not found' });
+        }
+
+        // Query cars by brand using the brand's ObjectId
+        const cars = await Car.find({ brand: carBrand._id })
+        .populate('brand')
+        // .populate('branch')
+        .populate('features');
+        res.json(cars);
+    } 
+    catch (error) {
+        console.log("Error fetching cars by brand:", error);
+        res.status(500).json({ message: 'Error fetching cars by brand', error });
+    }
+};

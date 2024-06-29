@@ -28,7 +28,6 @@ const carSchema = new mongoose.Schema(
     km: {
         type: String,
         required: true,
-        minLength: 3,
         maxLength: 50,
       },
     priceperday: {
