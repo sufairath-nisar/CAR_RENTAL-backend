@@ -7,7 +7,7 @@ import Features from "../models/featuresModel.js";
 //GET ALL CAR DETAILS
 export const getAllCars = async (req, res) => {
     try{
-        const cars = await Car.find();
+        const cars = await Car.find().populate('features');
         return res.send(cars);
     }
     catch (error) {
@@ -110,12 +110,12 @@ export const createCar = async (req, res) => {
             const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
 
             // FIND BRAND
-            let findBrand = await CarBrands.findOne({ name: brand });
+            // let findBrand = await CarBrands.findOne({ name: brand });
 
-            if (!findBrand) {
-                findBrand = new CarBrands({ name: brand });
-                await findBrand.save();
-            }
+            // if (!findBrand) {
+            //     findBrand = new CarBrands({ name: brand });
+            //     await findBrand.save();
+            // }
 
             // FIND BRANCh
             let findBranch = await Branch.findOne({ name: branch });
@@ -136,8 +136,9 @@ export const createCar = async (req, res) => {
                 priceperday,
                 priceperweek,
                 pricepermonth,
-                brand: findBrand._id,
-                // branch: findBranch._id,
+                // brand: findBrand._id,
+                brand,
+                branch: findBranch._id,
                 features: findFeatures._id,
                 image: imageUrl,
             });
@@ -178,7 +179,7 @@ export const updateCar = async (req, res) => {
 
         const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
 
-        const findBrand = await CarBrands.findById(brand);
+        // const findBrand = await CarBrands.findById(brand);
         const findFeatures = await Features.findById(features);
         const findBranch = await Branch.findById(branch);
 
@@ -195,7 +196,8 @@ export const updateCar = async (req, res) => {
             priceperday,
             priceperweek,
             pricepermonth,
-            brand: findBrand._id,
+            brand,
+            // brand: findBrand._id,
             branch: findBranch._id,
             features: findFeatures._id,
         };
@@ -246,7 +248,8 @@ export const getCarsByType = async (req, res) => {
         console.log(req.params);
         const cars = await Car.find({ type }).populate('features'); // Populate features if it's a reference in your model
         res.json(cars);
-    } catch (error) {
+    } 
+    catch (error) {
         console.log("Error fetching cars by type:", error);
         res.status(500).json({ message: 'Error fetching cars by type', error });
     }
@@ -255,9 +258,12 @@ export const getCarsByType = async (req, res) => {
 export const getCarsByCategory = async (req, res) => {
     try {
         const { category } = req.params;
-        const cars = await Car.find({ category });
+        console.log(req.params);
+        const cars = await Car.find({ category }).populate('features'); // Populate features if it's a reference in your model
         res.json(cars);
-    } catch (error) {
+    } 
+    catch (error) {
+        console.log("Error fetching cars by category:", error);
         res.status(500).json({ message: 'Error fetching cars by category', error });
     }
 };
@@ -265,23 +271,40 @@ export const getCarsByCategory = async (req, res) => {
 export const getCarsByBrand = async (req, res) => {
     try {
         const { brand } = req.params;
-
-        // Find the CarBrands document by name
-        const carBrand = await CarBrands.findOne({ name: brand });
-
-        if (!carBrand) {
-            return res.status(404).json({ message: 'Car brand not found' });
-        }
-
-        // Query cars by brand using the brand's ObjectId
-        const cars = await Car.find({ brand: carBrand._id })
-        .populate('brand')
-        // .populate('branch')
-        .populate('features');
+        console.log(req.params);
+        const cars = await Car.find({ brand }).populate('features'); // Populate features if it's a reference in your model
         res.json(cars);
     } 
     catch (error) {
         console.log("Error fetching cars by brand:", error);
         res.status(500).json({ message: 'Error fetching cars by brand', error });
     }
+};
+
+
+//SEARCH
+export const searchCar = async (req, res) => {
+    try {
+        const { brandOrName } = req.params; 
+        console.log("Requested car brand or name:", brandOrName);
+
+        // Use find to search for all cars by brand or name
+        const cars = await Car.find({
+            $or: [
+                { brand: { $regex: new RegExp(brandOrName, "i") } },
+                { carName: { $regex: new RegExp(brandOrName, "i") } }
+            ]
+        }).populate('features');
+
+        console.log(cars);
+
+        if (cars.length === 0) {
+            return res.status(404).json({ message: "No cars found" });
+        }
+
+        res.json(cars);
+    } catch (error) {
+        console.log("Error fetching cars:", error);
+        res.status(500).json({ message: "Failed to fetch car details" });
+    } 
 };

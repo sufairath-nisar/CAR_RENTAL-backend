@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { signup, signin, createOrders,createPayment } from "../controllers/clientsController.js";
 import { getBranchesByAddress, getAllBranches } from '../controllers/branchController.js';
 import { sendEmail } from '../controllers/emailController.js';
-import {getCar, getCarsByType, getCarsByCategory, getCarsByBrand} from "../controllers/carController.js";
+import {getCar, getCarsByType, getCarsByCategory, getCarsByBrand, searchCar, getAllCars} from "../controllers/carController.js";
 import upload from "../middlewares/upload-middleware.js";
 
 
@@ -19,7 +19,8 @@ clientRouter.get("/get-car", getCar);
 clientRouter.get("/get-cars/types/:type", getCarsByType);
 clientRouter.get("/get-cars/category/:category", getCarsByCategory);
 clientRouter.get("/get-cars/brand/:brand", getCarsByBrand);
-// clientRouter.get("/get-cars", getCars);
+clientRouter.get("/search-cars/:brandOrName", searchCar);
+clientRouter.get("/get-all-cars", getAllCars);
 
 clientRouter.post("/add-payment",upload.single('file'), createPayment);
 
