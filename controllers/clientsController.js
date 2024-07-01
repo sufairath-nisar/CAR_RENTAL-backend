@@ -63,24 +63,25 @@ export const signin = async (req, res) => {
     const client = await Clients.findOne({ email });
 
     if (!client) {
-      return res.send("User not found");
+      return res.status(404).send("User not found");
     }
 
     const matchPassword = await bcrypt.compare(password, client.hashPassword);
 
     if (!matchPassword) {
-      return res.send("Password is not correct");
+      return res.status(401).send("Password is not correct");
     }
 
     const token = clientToken(email);
     res.cookie("token", token);
-    res.send("Logged in!");
+    res.status(200).send("Logged in!");
   } 
   catch (error) {
     console.log(error, "Something wrong");
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 //create order
 export const createOrders = async (req, res) => {
