@@ -5,6 +5,9 @@ import Car from "../models/carModel.js"
 import {clientToken} from "../utils/generateToken.js";
 import Orders from "../models/ordersModel.js";
 import Payment from "../models/paymentModel.js";
+import dotenv from "dotenv";
+import fetch from 'node-fetch';
+
 
 
 
@@ -58,7 +61,16 @@ export const signup = async (req, res) => {
 //signin
 export const signin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password,  captchaToken } = req.body;
+    // Verify reCAPTCHA
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${captchaToken}`;
+    const captchaResponse = await fetch(url, { method: 'POST' });
+    const captchaResult = await captchaResponse.json();
+
+    if (!captchaResult.success) {
+      return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed' });
+    }
 
     const client = await Clients.findOne({ email });
 
