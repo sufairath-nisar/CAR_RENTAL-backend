@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from 'dotenv';
-import { signup, signin, createOrders,createPayment } from "../controllers/clientsController.js";
+import { signup, signin, createOrders,createPayment, getAClient} from "../controllers/clientsController.js";
 import { getBranchesByAddress, getAllBranches } from '../controllers/branchController.js';
 import { sendEmail } from '../controllers/emailController.js';
 import {getCar, getCarsByType, getCarsByCategory, getCarsByBrand, searchCar, getAllCars} from "../controllers/carController.js";
@@ -26,6 +26,8 @@ clientRouter.post("/add-payment",upload.single('file'), createPayment);
 
 clientRouter.get("/branches/search/byAddress", getBranchesByAddress);
 clientRouter.get("/branches", getAllBranches);
+
+clientRouter.get("/get-a-client", getAClient);
 
 clientRouter.post('/send-email', sendEmail);
 

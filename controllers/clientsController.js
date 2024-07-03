@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 import fetch from 'node-fetch';
 
 
-
+dotenv.config();
 
 //signup
 export const signup = async (req, res) => {
@@ -21,7 +21,7 @@ export const signup = async (req, res) => {
     
     
     if (clientExist) {
-      return res.send("User is already exist");
+      return res.status(400).send("Email address is already registered");
     }
     
     const saltRounds = 10;
@@ -203,6 +203,31 @@ export const createPayment = async (req, res) => {
     res.send("failed to add payment details");
   }
 };
+
+
+export const getAClient = async (req, res) => {
+  try {
+    const { email } = req.query; // Use query parameters, not params
+    console.log(req.query); // Log the query parameters to debug
+
+    if (!email) {
+      return res.status(400).send("Email query parameter is required");
+    }
+
+    const client = await Clients.findOne({ email }); // Find one client by email
+    if (!client) { // Check if client is null or undefined
+      return res.status(404).send("No client found with the provided email");
+    }
+
+    res.status(200).json(client); // Return the found client
+  } catch (error) {
+    console.log("Error fetching client:", error);
+    res.status(500).send("Failed to fetch client details");
+  }
+};
+
+
+
 
 
 
