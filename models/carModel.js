@@ -19,11 +19,11 @@ const carSchema = new mongoose.Schema(
       required: true,
       enum: ["small", "medium", "crossover", "SUV", "luxury", "commercial"],
     },
-    brand: [{ 
+    brand: { 
       type: String,
       required: true,
       enum: ["nissan", "infiniti", "KIA", "mistubishi", "chevrolet", "renault", "hyundai", "MG", "toyota"],
-    }],
+    },
     carName: {
       type: String,
       required: true,

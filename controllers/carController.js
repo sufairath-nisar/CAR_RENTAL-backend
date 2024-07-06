@@ -1,6 +1,6 @@
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import Car from "../models/carModel.js";
-import CarBrands from "../models/carBrandsModel.js";
+// import CarBrands from "../models/carBrandsModel.js";
 import Branch from "../models/branchModel.js";
 import Features from "../models/featuresModel.js";
 
