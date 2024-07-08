@@ -5,7 +5,7 @@ dotenv.config();
 export const sendEmail = async (req, res) => {
   const { fromEmail, subject, text } = req.body;
 
-  if (!fromEmail || !subject || !text) {
+  if (!fromEmail  || !subject || !text) {
     return res.status(400).json({ message: 'All fields are required!' });
   }
 
@@ -13,17 +13,17 @@ export const sendEmail = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: fromEmail, // Use the user's email for authentication
+       
       },
       tls: {
-        rejectUnauthorized: false, 
+        rejectUnauthorized: false,
       },
     });
 
     const mailOptions = {
-      from: fromEmail,
-      to: 'emiratesdrive774@gmail.com',
+      from: fromEmail, // Use the user's email as the sender's address
+      to: 'emiratesdrive774@gmail.com', // Static recipient email address
       subject: subject,
       text: text,
     };

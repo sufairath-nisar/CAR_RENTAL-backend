@@ -6,13 +6,18 @@ dotenv.config();
 function authenticateClient(req, res, next) {
   const token = req.cookies.token;
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
-    console.log(err);
+  if (!token) {
+    return res.status(401).json({ message: 'Access Denied. No token provided.' });
+  }
 
-    if (err) return res.sendStatus(403);
+  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    if (err) {
+      console.error('Token verification failed:', err);
+      return res.status(401).json({ message: 'Invalid token.' });
+    }
 
     req.user = user;
-    console.log(req.user.email);
+    console.log('Authenticated user:', req.user);
 
     next();
   });

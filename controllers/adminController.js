@@ -166,6 +166,19 @@ export const sortOrders = async (req, res) => {
   }
 };
 
+//view clients messages
+export const viewMessages = async (req, res) => {
+  try {
+    // Fetch all messages from the database
+    const messages = await Contactus.find();
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ message: 'Error fetching messages. Please try again later!' });
+  }
+};
+
 
 
 

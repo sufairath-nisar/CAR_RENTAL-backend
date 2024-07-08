@@ -7,6 +7,7 @@ import Orders from "../models/ordersModel.js";
 import Payment from "../models/paymentModel.js";
 import dotenv from "dotenv";
 import fetch from 'node-fetch';
+import Contactus from "../models/contactusModel.js";
 
 
 dotenv.config();
@@ -48,9 +49,9 @@ export const signup = async (req, res) => {
       return res.send("user is not created");
     }
 
-    const token = clientToken(email);   
-    res.cookie("token", token)
-    res.send("Signed successfully!");
+    const token = clientToken({ email, role });
+    res.cookie("token", token, { httpOnly: true });
+    res.status(201).json({ message: "Signed up successfully!", token });
   } 
   catch (error) {
     console.log(error, "Something wrong");
@@ -84,9 +85,14 @@ export const signin = async (req, res) => {
       return res.status(401).send("Password is not correct");
     }
 
-    const token = clientToken(email);
-    res.cookie("token", token);
-    res.status(200).send("Logged in!");
+  // Generate JWT token
+  const token = clientToken({ email, role: client.role });
+    
+  // Set token in HTTP-only cookie
+  res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'strict' });
+
+  console.log('User logged in:', email);
+  res.status(200).json({ message: "Logged in successfully!", token });
   } 
   catch (error) {
     console.log(error, "Something wrong");
@@ -228,6 +234,119 @@ export const getAClient = async (req, res) => {
 
 
 
+// change password
+// export const changePassword = async (req, res) => {
+//   try {
+//     const { email, currentPassword, newPassword } = req.body;
+
+//     // Find the client by email
+//     const client = await Clients.findOne({ email });
+
+//     if (!client) {
+//       return res.status(404).send('Client not found');
+//     }
+
+//     // Verify current password
+//     const matchPassword = await bcrypt.compare(currentPassword, client.hashPassword);
+//     if (!matchPassword) {
+//       return res.status(401).send('Current password is incorrect');
+//     }
+
+//     // Hash the new password
+//     const saltRounds = 10;
+//     const hashPassword = await bcrypt.hash(newPassword, saltRounds);
+
+//     // Update client's password
+//     client.hashPassword = hashPassword;
+//     await client.save();
+
+//     res.status(200).send('Password changed successfully');
+//   } catch (error) {
+//     console.error('Error changing password:', error);
+//     res.status(500).send('Failed to change password');
+//   }
+// };
+
+
+export const changePassword = async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+
+    // Find the client by email
+    const client = await Clients.findOne({ email });
+
+    if (!client) {
+      return res.status(404).send('Client not found');
+    }
+
+    // Verify current password
+    const matchPassword = await bcrypt.compare(currentPassword, client.hashPassword);
+    if (!matchPassword) {
+      return res.status(401).send('Current password is incorrect');
+    }
+
+    // Hash the new password
+    const saltRounds = 10;
+    const hashPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update client's password
+    client.hashPassword = hashPassword;
+    await client.save();
+
+    res.status(200).send('Password changed successfully');
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).send('Failed to change password');
+  }
+};
+
+
+// Get client details
+export const getClient = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const client = await Clients.findByOne(email);
+
+    if (!client) {
+      return res.status(404).send("Client not found");
+    }
+
+    res.send(client);
+  } catch (error) {
+    console.log("Error fetching client details:", error);
+    res.status(500).send("Failed to fetch client details");
+  }
+};
+
+
+// Function to send a message
+export const sendMessage = async (req, res) => {
+  console.log("tetsing");
+  const { email, subject,  message } = req.body;
+  console.log('Request Body:', req.body); // Log request body
+
+  // Validate input fields
+  if (!email || !subject || !message) {
+    return res.status(400).json({ message: 'All fields are required!' });
+  }
+
+  try {
+    // Create a new message document
+    const newMessage = new Contactus({
+      email,
+      subject,
+      message,
+    });
+
+    // Save the message to the database
+    await newMessage.save();
+
+    res.status(201).json({ message: 'Message sent successfully!' });
+  } catch (error) {
+    console.error('Error sending message:', error);
+    res.status(500).json({ message: 'Error sending message. Please try again later!' });
+  }
+};
 
 
 
