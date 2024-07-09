@@ -108,7 +108,7 @@ export const createOrders = async (req, res) => {
       const body = req.body;
       console.log(body, "body");
 
-      const { pickupDate,dropOffDate,pickupTime,dropoffTime,drivenMethod,location,orderStatus,car,client} = body;
+      const { pickupDate,dropOffDate,pickupTime,dropoffTime,drivenMethod,pickupLocation,dropoffLocation,orderStatus,car,client} = body;
 
       //check client
       const findClient = await Clients.findById(client);
@@ -129,7 +129,8 @@ export const createOrders = async (req, res) => {
         pickupTime,
         dropoffTime,
         drivenMethod,
-        location,
+        pickupLocation,
+        dropoffLocation,
         orderStatus,
         car : findCar._id,
         client : findClient._id
@@ -211,26 +212,26 @@ export const createPayment = async (req, res) => {
 };
 
 
-export const getAClient = async (req, res) => {
-  try {
-    const { email } = req.query; // Use query parameters, not params
-    console.log(req.query); // Log the query parameters to debug
+// export const getAClient = async (req, res) => {
+//   try {
+//     const { email } = req.query; // Use query parameters, not params
+//     console.log(req.query); // Log the query parameters to debug
 
-    if (!email) {
-      return res.status(400).send("Email query parameter is required");
-    }
+//     if (!email) {
+//       return res.status(400).send("Email query parameter is required");
+//     }
 
-    const client = await Clients.findOne({ email }); // Find one client by email
-    if (!client) { // Check if client is null or undefined
-      return res.status(404).send("No client found with the provided email");
-    }
+//     const client = await Clients.findOne({ email }); // Find one client by email
+//     if (!client) { // Check if client is null or undefined
+//       return res.status(404).send("No client found with the provided email");
+//     }
 
-    res.status(200).json(client); // Return the found client
-  } catch (error) {
-    console.log("Error fetching client:", error);
-    res.status(500).send("Failed to fetch client details");
-  }
-};
+//     res.status(200).json(client); // Return the found client
+//   } catch (error) {
+//     console.log("Error fetching client:", error);
+//     res.status(500).send("Failed to fetch client details");
+//   }
+// };
 
 
 
@@ -305,18 +306,19 @@ export const changePassword = async (req, res) => {
 export const getClient = async (req, res) => {
   try {
     const email = req.params.email;
-    const client = await Clients.findByOne(email);
-
+    console.log(`Fetching client with email: ${email}`); // Debugging log
+    const client = await Clients.findOne({ email });
     if (!client) {
+      console.log("Client not found");
       return res.status(404).send("Client not found");
     }
-
     res.send(client);
   } catch (error) {
     console.log("Error fetching client details:", error);
     res.status(500).send("Failed to fetch client details");
   }
 };
+
 
 
 // Function to send a message
@@ -347,6 +349,129 @@ export const sendMessage = async (req, res) => {
     res.status(500).json({ message: 'Error sending message. Please try again later!' });
   }
 };
+
+
+//Edit clients details
+// export const editProfile = async (req, res) => {
+//   try {
+//     const { email } = req.params;
+//     const {
+   
+//       firstName,
+//       lastName,
+//       nationality,
+//       address,
+//       license,
+//       companyName,
+//       position,
+//       trn,
+//       ph
+//     } = req.body;
+
+//     // Find the client by ID
+//     const client = await Clients.findOne(email);
+
+//     if (!client) {
+//       return res.status(404).send('Client not found');
+//     }
+
+//     // Update the client's profile fields
+   
+//     client.firstName = firstName || client.firstName;
+//     client.lastName = lastName || client.lastName;
+//     client.nationality = nationality || client.nationality;
+//     client.address = address || client.address;
+//     client.license = license || client.license;
+//     client.ph = ph || client.ph;
+
+//     // Only update company-related fields if the role is corporate
+//     if (client.role === 'corporate') {
+//       client.companyName = companyName || client.companyName;
+//       client.position = position || client.position;
+//       client.trn = trn || client.trn;
+//     }
+
+//     // Save the updated client profile
+//     const updatedClient = await Clients.save();
+
+//     res.json({
+//       _id: updatedClient._id,
+//       email: updatedClient.email,
+//       role: updatedClient.role,
+//       firstName: updatedClient.firstName,
+//       lastName: updatedClient.lastName,
+//       nationality: updatedClient.nationality,
+//       address: updatedClient.address,
+//       license: updatedClient.license,
+//       companyName: updatedClient.companyName,
+//       position: updatedClient.position,
+//       trn: updatedClient.trn,
+//       ph: updatedClient.ph,
+//       createdAt: updatedClient.createdAt,
+//       updatedAt: updatedClient.updatedAt,
+//     });
+
+//     console.log(res.json);
+//   } catch (error) {
+//     console.error('Error editing profile:', error);
+//     res.status(500).send('Failed to edit profile');
+//   }
+// };
+
+
+export const editProfile = async (req, res) => {
+    try{
+       
+        const { email } = req.params.email;
+        const {
+       
+          firstName,
+          lastName,
+          nationality,
+          address,
+          license,
+          companyName,
+          position,
+          trn,
+          ph
+        } = req.body;
+
+
+        const updateData = {
+          firstName,
+          lastName,
+          nationality,
+          address,
+          license,
+          companyName,
+          position,
+          trn,
+          ph
+        };
+        
+        const update = await Clients.findOneAndUpdate(
+          { _email: email },
+           updateData,
+          {
+            new: true,
+          }
+        );
+
+          if (!update) {
+              return res.status(404).send("Profile is not edited");
+          }
+
+          return res.status(200).send(updateData);
+      
+       
+    }
+    catch (error) {
+        console.log("Something went wrong", error);
+        res.status(500).send("Failed to edit profile details");
+      }
+   
+};
+
 
 
 

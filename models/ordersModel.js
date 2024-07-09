@@ -29,26 +29,25 @@ const ordersSchema = new mongoose.Schema(
         required: true,
     },
 
-    location: {
-        type: { 
-            type: String, 
-            default: 'Point' 
-        },
-        coordinates:{
-            type: [Number],
-            required: true
-        }
+    pickupLocation: {
+      type: String,
+      required: true
+    },
+
+    dropoffLocation: {
+      type: String,
+      required: true
     },
 
     orderStatus: {
       type : String,
-      enum: ["pending","assigned","confirmed", "pickup completed", "dropoff completed"],
+      enum: ["pending","confirmed", "pickup completed", "dropoff completed"],
       required: true,
       default: "pending"
     },
     
     payment: [{ type: mongoose.Types.ObjectId, ref: "Payment" }],
-    staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
+    // staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],
     car: [{ type: mongoose.Types.ObjectId, ref: "Car" }],
     client: [{ type: mongoose.Types.ObjectId, ref: "Clients" }],
     

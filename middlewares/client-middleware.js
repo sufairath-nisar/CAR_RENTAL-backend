@@ -7,6 +7,7 @@ function authenticateClient(req, res, next) {
   const token = req.cookies.token;
 
   if (!token) {
+    console.log('No token provided in cookies.');
     return res.status(401).json({ message: 'Access Denied. No token provided.' });
   }
 
