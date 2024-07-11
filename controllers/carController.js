@@ -18,22 +18,26 @@ export const getAllCars = async (req, res) => {
 
 //GET A CAR DETAILS
 export const getACar = async (req, res) => {
-    try{
-        const id = req.params.id; 
+    try {
+        const id = req.params.id;
         console.log("Requested car ID:", id);
-        const car = await Car.findById(id);
+
+        const car = await Car.findById(id)
+            .populate('branch')
+            .populate('features');
+
         console.log(car);
         if (!car) {
             return res.status(404).send("Car not found");
         }
 
         res.send(car);
-    }
-    catch (error) {
+    } catch (error) {
         console.log("Error fetching car:", error);
         res.status(500).send("Failed to fetch car details");
-    } 
+    }
 };
+
 
 // FILTER
 export const getCar = async (req, res) => {
@@ -246,7 +250,7 @@ export const getCarsByType = async (req, res) => {
     try {
         const { type } = req.params;
         console.log(req.params);
-        const cars = await Car.find({ type }).populate('features'); // Populate features if it's a reference in your model
+        const cars = await Car.find({ type }).populate('features').populate('branch'); // Populate features if it's a reference in your model
         res.json(cars);
     } 
     catch (error) {
@@ -259,7 +263,7 @@ export const getCarsByCategory = async (req, res) => {
     try {
         const { category } = req.params;
         console.log(req.params);
-        const cars = await Car.find({ category }).populate('features'); // Populate features if it's a reference in your model
+        const cars = await Car.find({ category }).populate('features').populate('branch'); // Populate features if it's a reference in your model
         res.json(cars);
     } 
     catch (error) {
@@ -272,7 +276,7 @@ export const getCarsByBrand = async (req, res) => {
     try {
         const { brand } = req.params;
         console.log(req.params);
-        const cars = await Car.find({ brand }).populate('features'); // Populate features if it's a reference in your model
+        const cars = await Car.find({ brand }).populate('features').populate('branch'); // Populate features if it's a reference in your model
         res.json(cars);
     } 
     catch (error) {
@@ -294,7 +298,7 @@ export const searchCar = async (req, res) => {
                 { brand: { $regex: new RegExp(brandOrName, "i") } },
                 { carName: { $regex: new RegExp(brandOrName, "i") } }
             ]
-        }).populate('features');
+        }).populate('features').populate('branch');
 
         console.log(cars);
 

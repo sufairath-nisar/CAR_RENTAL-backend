@@ -7,7 +7,7 @@ const ordersSchema = new mongoose.Schema(
       required: true,
     },
 
-    dropOffDate: {
+    dropoffDate: {
         type: Date,
         required: true,
     },

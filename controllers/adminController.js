@@ -65,18 +65,19 @@ export const signin = async (req, res) => {
 
 //get all orders
 export const getAllOrders = async (req, res) => {
-  try{
-      const orders = await Orders.find()
+  try {
+    const orders = await Orders.find()
       .populate('payment')
       .populate('car')
       .populate('client');
-      return res.send(orders);
+    res.send(orders);
+  } catch (error) {
+    console.log("Error fetching orders:", error);
+    res.status(500).send("Failed to fetch orders details");
   }
-  catch (error) {
-      console.log("Error fetching orders:", error);
-      res.status(500).send("Failed to fetch orders details");
-  }   
 };
+
+
 
 //update order
 export const updateOrders = async (req, res) => {

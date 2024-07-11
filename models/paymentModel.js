@@ -9,7 +9,7 @@ const paymentSchema = new mongoose.Schema(
     },
     proof: {
         type: String,
-        
+        required:true
     },
     cardNum: {
         type: Number,

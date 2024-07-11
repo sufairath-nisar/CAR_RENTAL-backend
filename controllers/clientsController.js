@@ -8,6 +8,7 @@ import Payment from "../models/paymentModel.js";
 import dotenv from "dotenv";
 import fetch from 'node-fetch';
 import Contactus from "../models/contactusModel.js";
+import { parseISO } from 'date-fns';
 
 
 dotenv.config();
@@ -92,7 +93,8 @@ export const signin = async (req, res) => {
   res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'strict' });
 
   console.log('User logged in:', email);
-  res.status(200).json({ message: "Logged in successfully!", token });
+  res.status(200).json({ message: "Logged in successfully!", token ,email, clientId: client._id});
+ 
   } 
   catch (error) {
     console.log(error, "Something wrong");
@@ -102,52 +104,115 @@ export const signin = async (req, res) => {
 
 
 //create order
+// export const createOrders = async (req, res) => {
+//   try {
+//       console.log("hitted");
+//       const body = req.body;
+//       console.log(body, "body");
+
+//       const { pickupDate,dropoffDate,pickupTime,dropoffTime,drivenMethod,pickupLocation,dropoffLocation,orderStatus,car,client} = body;
+
+//       //check client
+//       const findClient = await Clients.findById(client);
+//       if (!findClient) {
+//         return res.send("Client is not found!");
+//       }
+     
+//       // check car
+//       const findCar = await Car.findById(car);
+//       console.log(findCar);
+//       if (!findCar) {
+//         return res.send("Car is not found!");
+//       }
+
+//       const createOrder = new Orders({
+//         pickupDate,
+//         dropoffDate,
+//         pickupTime,
+//         dropoffTime,
+//         drivenMethod,
+//         pickupLocation,
+//         dropoffLocation,
+//         orderStatus,
+//         car : findCar._id,
+//         client : findClient._id
+//       });
+           
+//       const newOrderCreated = await createOrder.save();
+//       if (!newOrderCreated) {
+//         return res.send("order details are not added");
+//       }
+//       return res.send(newOrderCreated);     
+//       console.log(newOrderCreated);
+//   } 
+//   catch (error) {
+//     console.log("something went wrong", error);
+//     res.send("failed to add order details");
+//   }
+// };
+
+
 export const createOrders = async (req, res) => {
   try {
-      console.log("hitted");
-      const body = req.body;
-      console.log(body, "body");
+    console.log("Request Body:", req.body);
+    const {
+      pickupDate,
+      dropoffDate,
+      pickupTime,
+      dropoffTime,
+      drivenMethod,
+      pickupLocation,
+      dropoffLocation,
+      orderStatus,
+      car,
+      client
+    } = req.body;
+    console.log("backend pickup date", pickupDate)
 
-      const { pickupDate,dropOffDate,pickupTime,dropoffTime,drivenMethod,pickupLocation,dropoffLocation,orderStatus,car,client} = body;
+    // Check if the client exists
+    const findClient = await Clients.findById(client);
+    if (!findClient) {
+      return res.status(404).send("Client not found!");
+    }
 
-      //check client
-      const findClient = await Clients.findById(client);
-      if (!findClient) {
-        return res.send("Client is not found!");
-      }
-     
-      // check car
-      const findCar = await Car.findById(car);
-      console.log(findCar);
-      if (!findCar) {
-        return res.send("Car is not found!");
-      }
+    // Check if the car exists
+    const findCar = await Car.findById(car);
+    if (!findCar) {
+      return res.status(404).send("Car not found!");
+    }
 
-      const createOrder = new Orders({
-        pickupDate,
-        dropOffDate,
-        pickupTime,
-        dropoffTime,
-        drivenMethod,
-        pickupLocation,
-        dropoffLocation,
-        orderStatus,
-        car : findCar._id,
-        client : findClient._id
-      });
-           
-      const newOrderCreated = await createOrder.save();
-      if (!newOrderCreated) {
-        return res.send("order details are not added");
-      }
-      return res.send(newOrderCreated);     
-  } 
-  catch (error) {
-    console.log("something went wrong", error);
-    res.send("failed to add order details");
+    
+    // Parse dates to ensure they are stored correctly in the database
+    const parsedPickupDate = parseISO(pickupDate);
+    const parsedDropoffDate = parseISO(dropoffDate);
+
+    const createOrder = new Orders({
+      pickupDate: parsedPickupDate,
+      dropoffDate: parsedDropoffDate,
+      pickupTime,
+      dropoffTime,
+      drivenMethod,
+      pickupLocation,
+      dropoffLocation,
+      orderStatus,
+      car: findCar._id,
+      client: findClient._id
+    });
+
+    console.log("after parsed pickup date backend", pickupDate);
+
+    const newOrderCreated = await createOrder.save();
+    if (!newOrderCreated) {
+      return res.status(500).send("Failed to add order details");
+    }
+
+    console.log('New Order Created:', newOrderCreated);
+    return res.status(200).json(newOrderCreated);
+  } catch (error) {
+    console.error('Error creating order:', error);
+    return res.status(500).send("Failed to add order details");
   }
 };
-
 
 //create payment
 export const createPayment = async (req, res) => {
