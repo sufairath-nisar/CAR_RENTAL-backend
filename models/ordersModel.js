@@ -45,6 +45,11 @@ const ordersSchema = new mongoose.Schema(
       required: true,
       default: "pending"
     },
+
+    totalPayment: {
+      type : String,
+    },
+   
     
     payment: [{ type: mongoose.Types.ObjectId, ref: "Payment" }],
     // staff: [{ type: mongoose.Types.ObjectId, ref: "Staff" }],

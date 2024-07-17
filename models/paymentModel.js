@@ -5,17 +5,17 @@ const paymentSchema = new mongoose.Schema(
     paymentMethod: {
         type: String,
         required: true,
-       enum:["cash","credit card"]
+       enum:["cash","online"]
     },
-    proof: {
-        type: String,
-        required:true
-    },
-    cardNum: {
-        type: Number,
-        maxLength: 50,
-        minLength:8
-    },
+    image: [{
+      type: String,
+      required: true
+  }],
+    // cardNum: {
+    //     type: Number,
+    //     maxLength: 50,
+    //     minLength:8
+    // },
     order: [{ type: mongoose.Types.ObjectId, ref: "Orders" }],
    
   },

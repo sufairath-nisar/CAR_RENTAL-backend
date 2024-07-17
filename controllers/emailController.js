@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const sendEmail = async (req, res) => {
-  const { fromEmail, subject, text } = req.body;
+  const { clientEmail, subject, text } = req.body;
 
-  if (!fromEmail  || !subject || !text) {
+  if (!clientEmail || !subject || !text) {
     return res.status(400).json({ message: 'All fields are required!' });
   }
 
@@ -13,8 +13,8 @@ export const sendEmail = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: fromEmail, // Use the user's email for authentication
-       
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
       },
       tls: {
         rejectUnauthorized: false,
@@ -22,23 +22,23 @@ export const sendEmail = async (req, res) => {
     });
 
     const mailOptions = {
-      from: fromEmail, // Use the user's email as the sender's address
-      to: 'emiratesdrive774@gmail.com', // Static recipient email address
+      from: process.env.EMAIL_USER,
+      to: clientEmail,
       subject: subject,
       text: text,
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
+    transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log('Error sending email:', error);
-        res.status(500).json({ message: 'Error sending email', error: error.message });
+        return res.status(500).json({ message: 'Error sending email', error: error.message });
       } else {
         console.log('Email sent: ' + info.response);
-        res.status(200).json({ message: 'Email sent successfully!' });
+        return res.status(200).json({ message: 'Email sent successfully!' });
       }
     });
   } catch (error) {
     console.log('Error in sending email:', error);
-    res.status(500).json({ message: 'Error sending email', error: error.message });
+    return res.status(500).json({ message: 'Error sending email', error: error.message });
   }
 };

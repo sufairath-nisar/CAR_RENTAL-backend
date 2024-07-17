@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from 'dotenv';
 import { getAllOrders } from "../controllers/adminController.js";
+import { sendEmail } from "../controllers/emailController.js";
 import { signup, signin, createOrders, createPayment, changePassword, getClient, sendMessage, editProfile } from "../controllers/clientsController.js";
 import { getBranchesByAddress, getAllBranches } from '../controllers/branchController.js';
 import { getCar, getCarsByType, getCarsByCategory, getCarsByBrand, searchCar,getACar, getAllCars } from "../controllers/carController.js";
@@ -29,7 +30,10 @@ clientRouter.get("/get-cars/brand/:brand",  getCarsByBrand);
 clientRouter.get("/search-cars/:brandOrName", searchCar);
 // clientRouter.get("/get-all-cars", authenticateClient, getAllCars);
 
-clientRouter.post("/add-payment", authenticateClient, upload.single('file'), createPayment);
+// clientRouter.post("/add-payment", upload.array('image', 10), createPayment);
+// adminRouter.post("/add-car", upload.single('image'), createCar);
+clientRouter.post("/add-payment", upload.array('files', 10), createPayment);
+
 
 clientRouter.get("/branches/search/byAddress", authenticateClient, getBranchesByAddress);
 clientRouter.get("/branches", authenticateClient, getAllBranches);
@@ -37,6 +41,8 @@ clientRouter.get("/branches", authenticateClient, getAllBranches);
 // clientRouter.get("/get-a-client", authenticateClient, getAClient);
 
 clientRouter.post('/send-message',  authenticateClient, sendMessage);
+
+clientRouter.post('/send-email',   sendEmail);
 
 
 export default clientRouter;

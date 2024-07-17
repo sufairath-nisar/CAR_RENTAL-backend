@@ -164,6 +164,7 @@ export const createOrders = async (req, res) => {
       pickupLocation,
       dropoffLocation,
       orderStatus,
+      totalPayment,
       car,
       client
     } = req.body;
@@ -195,8 +196,10 @@ export const createOrders = async (req, res) => {
       pickupLocation,
       dropoffLocation,
       orderStatus,
+      totalPayment,
       car: findCar._id,
-      client: findClient._id
+      client: findClient._id,
+      
     });
 
     console.log("after parsed pickup date backend", pickupDate);
@@ -215,64 +218,121 @@ export const createOrders = async (req, res) => {
 };
 
 //create payment
+
+
+// export const createPayment = async (req, res) => {
+//   try {
+//     console.log("hitted");
+
+//     if (!req.files || req.files.length < 4) {
+//       return res.status(400).send("Please upload at least 4 images.");
+//     }
+
+//     const uploadPromises = req.files.map(file => {
+//       return new Promise((resolve, reject) => {
+//         cloudinaryInstance.uploader.upload(file.path, (err, result) => {
+//           if (err) {
+//             reject(err);
+//           } else {
+//             resolve(result.secure_url);
+//           }
+//         });
+//       });
+//     });
+
+//     const imageUrls = await Promise.all(uploadPromises);
+//     const { paymentMethod, order } = req.body;
+
+//     const findOrder = await Orders.findById(order);
+//     if (!findOrder) {
+//       return res.status(400).send("Please make an order!");
+//     }
+
+//     const createPayment = new Payment({
+//       paymentMethod,
+//       image: imageUrls,
+//       order: findOrder._id
+//     });
+
+//     const newPaymentCreated = await createPayment.save();
+
+//     if (!newPaymentCreated) {
+//       return res.status(500).send("Payment details are not added");
+//     }
+
+//     if (findOrder.payment === undefined) { 
+//       findOrder.payment = newPaymentCreated._id;
+//       await findOrder.save(); 
+//     }
+
+//     if (paymentMethod === "cash") {
+//       findOrder.orderStatus = "confirmed";
+//       await findOrder.save();
+//     }
+
+//     return res.status(200).send(newPaymentCreated);
+
+//   } catch (error) {
+//     console.error("something went wrong", error);
+//     res.status(500).send("failed to add payment details");
+//   }
+// };
+ 
 export const createPayment = async (req, res) => {
   try {
-     
-      console.log("hitted");
-      if(!req.file) {
-        return res.status(400).send("file is not visible")
-        }
-      
-      cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
-        if (err) {
-            console.log(err, "error");
-            return res.status(500).json({
-            success: false,
-            message: "Error uploading file to cloudinary",
-            });
-        }
-    
-      const imageUrl = result.secure_url;
-      const body = req.body;
-      console.log(body, "body");
-      
-      // const { paymentMethod, cardNum, order} = body;
-      const paymentMethod = body.paymentMethod.replace(/"/g, '').trim();
-      const cardNum = body.cardNum.replace(/"/g, '').trim();
-      const order = body.order.replace(/"/g, '').trim();
+    console.log("hitted");
 
+    if (!req.files || req.files.length < 4) {
+      return res.status(400).send("Please upload at least 4 files.");
+    }
 
-      //check order
-      const findOrder = await Orders.findById(order);
-      if (!findOrder) {
-        return res.send("Please make an order!");
-      }
-   
-      const createPayment = new Payment({
-        paymentMethod,
-        cardNum,
-        proof : imageUrl,
-        order : findOrder._id
+    const uploadPromises = req.files.map(file => {
+      return new Promise((resolve, reject) => {
+        cloudinaryInstance.uploader.upload(file.path, { resource_type: "auto" }, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result.secure_url);
+          }
+        });
       });
-           
-      const newPaymentCreated = await createPayment.save();
-
-      if (!newPaymentCreated) {
-        return res.send("Payment details are not added");
-      }
-
-      if (findOrder.payment === undefined) { 
-        findOrder.payment = newPaymentCreated._id;
-        await findOrder.save(); 
-      }
-      return res.send(newPaymentCreated);    
-
     });
 
-  } 
-  catch (error) {
-    console.log("something went wrong", error);
-    res.send("failed to add payment details");
+    const fileUrls = await Promise.all(uploadPromises);
+    const { paymentMethod, order } = req.body;
+
+    const findOrder = await Orders.findById(order);
+    if (!findOrder) {
+      return res.status(400).send("Please make an order!");
+    }
+
+    const createPayment = new Payment({
+      paymentMethod,
+      image: fileUrls,
+      order: findOrder._id
+    });
+
+    const newPaymentCreated = await createPayment.save();
+
+    if (!newPaymentCreated) {
+      return res.status(500).send("Payment details are not added");
+    }
+
+    if (findOrder.payment === undefined) { 
+      findOrder.payment = newPaymentCreated._id;
+      await findOrder.save(); 
+    }
+
+    if (paymentMethod === "cash") {
+      findOrder.orderStatus = "confirmed";
+      await findOrder.save();
+    }
+
+    return res.status(200).send(newPaymentCreated);
+
+  } catch (error) {
+    console.error("Something went wrong:", error);
+    res.status(500).send("Failed to add payment details: " + error.message);
   }
 };
 
