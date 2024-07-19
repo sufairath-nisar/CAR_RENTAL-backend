@@ -358,6 +358,23 @@ export const createPayment = async (req, res) => {
 //   }
 // };
 
+export const getAClient = async (req, res) => {
+  try {
+    const email = req.query.email;
+    console.log(`Fetching client with email: ${email}`); // Debugging log
+    const client = await Clients.findOne({ email });
+    if (!client) {
+      console.log("Client not found");
+      return res.status(404).send("Client not found");
+    }
+    res.send(client);
+  } catch (error) {
+    console.log("Error fetching client details:", error);
+    res.status(500).send("Failed to fetch client details");
+  }
+};
+
+
 
 
 // change password
