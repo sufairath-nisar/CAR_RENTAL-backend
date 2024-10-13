@@ -200,6 +200,7 @@ export const createOrders = async (req, res) => {
       car: findCar._id,
       client: findClient._id,
       
+      
     });
 
     console.log("after parsed pickup date backend", pickupDate);
@@ -613,6 +614,25 @@ export const editProfile = async (req, res) => {
       }
    
 };
+
+// get orders by client
+export const getOrdersByClient = async (req, res) => {
+  try {
+    const clientId = req.params.clientId; // Assuming clientId is passed as a route parameter
+
+    const orders = await Orders.find({ client: clientId })
+      .select('pickupDate pickupTime dropoffDate dropoffTime totalPayment drivenMethod pickupLocation dropoffLocation car')
+      .populate('car', 'carName'); // Only populate the carName field from the car document
+
+    res.send(orders);
+  } catch (error) {
+    console.log("Error fetching orders for client:", error);
+    res.status(500).send("Failed to fetch orders details for client");
+  }
+};
+
+
+
 
 
 

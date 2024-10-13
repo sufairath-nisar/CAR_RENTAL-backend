@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from 'dotenv';
 import { getAllOrders } from "../controllers/adminController.js";
 import { sendEmail } from "../controllers/emailController.js";
-import { signup, signin, createOrders, createPayment, changePassword, getClient, sendMessage, editProfile , getAClient} from "../controllers/clientsController.js";
+import { signup, signin, createOrders, createPayment, changePassword, getClient, sendMessage, editProfile , getAClient, getOrdersByClient} from "../controllers/clientsController.js";
 import { getBranchesByAddress, getAllBranches } from '../controllers/branchController.js';
 import { getCar, getCarsByType, getCarsByCategory, getCarsByBrand, searchCar,getACar, getAllCars } from "../controllers/carController.js";
 import upload from "../middlewares/upload-middleware.js";
@@ -12,8 +12,8 @@ dotenv.config();
 
 const clientRouter = express.Router();
 
-clientRouter.post("/signup",  authenticateClient, signup);
-clientRouter.post("/signin",  authenticateClient, signin);
+clientRouter.post("/signup", signup);
+clientRouter.post("/signin", signin);
 clientRouter.put("/change-password", authenticateClient, changePassword);
 clientRouter.get("/view-profile/:email", authenticateClient, getClient);
 clientRouter.put("/edit-profile/:email", authenticateClient, editProfile);
@@ -21,6 +21,8 @@ clientRouter.put("/edit-profile/:email", authenticateClient, editProfile);
 
 clientRouter.post("/create-order", createOrders);
 clientRouter.get("/get-all-orders", getAllOrders);
+clientRouter.get("/get-my-bookings/:clientId", getOrdersByClient);
+
 
 clientRouter.get("/get-car", getCar);
 clientRouter.get("/get-a-car/:id", getACar);
