@@ -1,8 +1,10 @@
 import { cloudinaryInstance } from "../config/cloudinary.js";
+import mongoose from "mongoose"
 import Car from "../models/carModel.js";
 // import CarBrands from "../models/carBrandsModel.js";
 import Branch from "../models/branchModel.js";
 import Features from "../models/featuresModel.js";
+
 
 //GET ALL CAR DETAILS
 export const getAllCars = async (req, res) => {
@@ -94,12 +96,12 @@ export const getCar = async (req, res) => {
 // CREATE CAR
 export const createCar = async (req, res) => {
     try {
+        
         if (!req.file) {
             return res.status(400).send("Image file is required");
         }
 
         cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
-            console.log("{test");
             if (err) {
                 console.log(err);
                 return res.status(500).json({
@@ -108,10 +110,39 @@ export const createCar = async (req, res) => {
                 });
             }
 
+            
             const imageUrl = result.url;
-            const body = req.body;
-
-            const { carNumber, type, category, carName, km, priceperday, priceperweek, pricepermonth, brand, branch, features } = body;
+            const body = req.body;           
+            const { 
+              carNumber, 
+              type, 
+              category, 
+              carName, 
+              km, 
+              priceperday, 
+              priceperweek, 
+              pricepermonth, 
+              brand, 
+              branch,
+              features, 
+              // bluetooth,
+              // seats,
+              // leatherSeats,
+              // navigation,
+              // alloyWheel,
+              // applePlay,
+              // rearCamera,
+              // keylessEntry,
+              // doors,
+              // AUX,
+              // parkingSensors,
+              // airBags,
+              // fogLamps,
+              // cruiseControl,
+              // MP3Player,
+              // USB,
+              // passengersCapacity 
+              } = body;
 
             // FIND BRAND
             // let findBrand = await CarBrands.findOne({ name: brand });
@@ -122,15 +153,68 @@ export const createCar = async (req, res) => {
             // }
 
             // FIND BRANCh
-            let findBranch = await Branch.findOne({ name: branch });
-
+            let findBranch = await Branch.findById(branch);
             if (!findBranch) {
                 return res.status(400).send("Please add branch details first!");
             }
+            // Validate required fields
+            if (
+              !carNumber || !type || !category || !carName || !km ||
+              !priceperday || !priceperweek || !pricepermonth || !brand || !branch
+            ) {
+              return res.status(400).send("All fields are required");
+            }
 
-            // FIND FEATURES
-            let findFeatures = await Features.create(JSON.parse(features));
+            // Validate carNumber
+            if (typeof carNumber !== "string" || carNumber.length < 3 || carNumber.length > 30) {
+              return res.status(400).send("Invalid car number");
+            }
 
+            // Validate type
+            const validTypes = ["sedan", "hatchback", "crossover SUV", "large SUV"];
+            if (!validTypes.includes(type)) {
+              return res.status(400).send("Invalid car type");
+            }
+
+            // Validate category
+            const validCategories = ["small", "medium", "crossover", "SUV", "luxury", "commercial"];
+            if (!validCategories.includes(category)) {
+              return res.status(400).send("Invalid car category");
+            }
+
+            // Validate brand
+            const validBrands = ["nissan", "infiniti", "KIA", "mitsubishi", "chevrolet", "renault", "hyundai", "MG", "toyota"];
+            if (!validBrands.includes(brand)) {
+              return res.status(400).send("Invalid brand");
+            }
+
+            // Validate carName
+            if (typeof carName !== "string" || carName.length < 3 || carName.length > 50) {
+              return res.status(400).send("Invalid car name");
+            }
+
+            // Validate km
+            if (typeof km !== "string" || isNaN(parseInt(km)) || parseInt(km) < 0) {
+              return res.status(400).send("Invalid km");
+            }
+
+            // Validate prices
+            if (isNaN(parseInt(priceperday)) || isNaN(parseInt(priceperweek)) || isNaN(parseInt(pricepermonth))) {
+              return res.status(400).send("Invalid pricing fields");
+            }
+
+            // Validate branch ObjectId length
+            // if (typeof branch !== "string") {
+            //   return res.status(400).send("Invalid branch ID format");
+            // }
+            console.log(body);
+            
+            
+      console.log("new features",features);
+      const featuresString = features.replace(/"/g, '"').replace(/'/g, '"').replace(/(\w+):/g, '"$1":').replace('[\n', '{').replace('\n]', '}');
+      const featuresObject = JSON.parse(featuresString);
+      const savedFeatures = new Features(featuresObject);
+      const savedFeatureData = await savedFeatures.save();
             const createCar = new Car({
                 carNumber,
                 type,
@@ -143,8 +227,25 @@ export const createCar = async (req, res) => {
                 // brand: findBrand._id,
                 brand,
                 branch: findBranch._id,
-                features: findFeatures._id,
+                features: savedFeatureData._id,
                 image: imageUrl,
+                // bluetooth: bluetooth === "true" || bluetooth === true,
+                // seats: parseInt(seats) || 4,
+                // leatherSeats: leatherSeats === "true" || leatherSeats === true,
+                // navigation: navigation === "true" || navigation === true,
+                // alloyWheel: alloyWheel === "true" || alloyWheel === true,
+                // applePlay: applePlay === "true" || applePlay === true,
+                // rearCamera: rearCamera === "true" || rearCamera === true,
+                // keylessEntry: keylessEntry === "true" || keylessEntry === true,
+                // doors: parseInt(doors) || 4,
+                // AUX: AUX === "true" || AUX === true,
+                // parkingSensors: parkingSensors === "true" || parkingSensors === true,
+                // airBags: airBags === "true" || airBags === true,
+                // fogLamps: fogLamps === "true" || fogLamps === true,
+                // cruiseControl: cruiseControl === "true" || cruiseControl === true,
+                // MP3Player: MP3Player === "true" || MP3Player === true,
+                // USB: USB === "true" || USB === true,
+                // passengersCapacity: parseInt(passengersCapacity) || 4,
             });
 
             const newCarCreated = await createCar.save();
@@ -158,6 +259,170 @@ export const createCar = async (req, res) => {
         res.status(500).send("Failed to add car details");
     }
 };
+
+// export const createCar = async (req, res) => {
+//   try {
+
+//     // const result = await cloudinaryInstance.uploader.upload(req.file.path);
+//     // const imageUrl = result.url;
+       
+//     const {
+//       carNumber,
+//       type,
+//       category,
+//       carName,
+//       km,
+//       priceperday,
+//       priceperweek,
+//       pricepermonth,
+//       brand,
+//       branch,
+//       bluetooth,
+//       seats,
+//       leatherSeats,
+//       navigation,
+//       alloyWheel,
+//       applePlay,
+//       rearCamera,
+//       keylessEntry,
+//       doors,
+//       AUX,
+//       parkingSensors,
+//       airBags,
+//       fogLamps,
+//       cruiseControl,
+//       MP3Player,
+//       USB,
+//       passengersCapacity,
+      
+//     } = req.body;
+
+//     console.log("req.body:", req.body);
+//     console.log("req.file:", req.file);
+
+//     // Validate required fields
+//     if (
+//       !carNumber || !type || !category || !carName || !km ||
+//       !priceperday || !priceperweek || !pricepermonth || !brand || !branch
+//     ) {
+//       return res.status(400).send("All fields are required");
+//     }
+
+//     // Validate carNumber
+//     if (typeof carNumber !== "string" || carNumber.length < 3 || carNumber.length > 30) {
+//       return res.status(400).send("Invalid car number");
+//     }
+
+//     // Validate type
+//     const validTypes = ["sedan", "hatchback", "crossover SUV", "large SUV"];
+//     if (!validTypes.includes(type)) {
+//       return res.status(400).send("Invalid car type");
+//     }
+
+//     // Validate category
+//     const validCategories = ["small", "medium", "crossover", "SUV", "luxury", "commercial"];
+//     if (!validCategories.includes(category)) {
+//       return res.status(400).send("Invalid car category");
+//     }
+
+//     // Validate brand
+//     const validBrands = ["nissan", "infiniti", "KIA", "mistubishi", "chevrolet", "renault", "hyundai", "MG", "toyota"];
+//     if (!validBrands.includes(brand)) {
+//       return res.status(400).send("Invalid brand");
+//     }
+
+//     // Validate carName
+//     if (typeof carName !== "string" || carName.length < 3 || carName.length > 50) {
+//       return res.status(400).send("Invalid car name");
+//     }
+
+//     // Validate km
+//     if (typeof km !== "string" || isNaN(parseInt(km)) || parseInt(km) < 0) {
+//       return res.status(400).send("Invalid km");
+//     }
+
+//     // Validate prices
+//     if (isNaN(parseInt(priceperday)) || isNaN(parseInt(priceperweek)) || isNaN(parseInt(pricepermonth))) {
+//       return res.status(400).send("Invalid pricing fields");
+//     }
+
+//     // Validate branch ObjectId length
+//     if (typeof branch !== "string" || branch.length !== 24) {
+//       return res.status(400).send("Invalid branch ID format");
+//     }
+
+//     // Validate image file presence
+//     if (!req.file) {
+//       return res.status(400).send("Image file is required");
+//     }
+
+//     // Upload image to Cloudinary
+    
+
+//     // cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+//     //   console.log("{testing");
+//     //   if (err) {
+//     //       console.log(err);
+//     //       return res.status(500).json({
+//     //           success: false,
+//     //           message: "Error uploading file to cloudinary",
+//     //       });
+//     //   }
+
+//     //   const imageUrl = result.url;
+
+//     // Find the branch document
+//     const findBranch = await Branch.findOne({ _id: branch });
+//     if (!findBranch) {
+//       return res.status(400).send("Please add branch details first!");
+//     }
+
+//     // Create new car document
+//     const createCar = new Car({
+//       carNumber,
+//       type,
+//       category,
+//       carName,
+//       km,
+//       priceperday,
+//       priceperweek,
+//       pricepermonth,
+//       brand,
+//       image,
+//       bluetooth: bluetooth === "true" || bluetooth === true,
+//       seats: parseInt(seats) || 4,
+//       leatherSeats: leatherSeats === "true" || leatherSeats === true,
+//       navigation: navigation === "true" || navigation === true,
+//       alloyWheel: alloyWheel === "true" || alloyWheel === true,
+//       applePlay: applePlay === "true" || applePlay === true,
+//       rearCamera: rearCamera === "true" || rearCamera === true,
+//       keylessEntry: keylessEntry === "true" || keylessEntry === true,
+//       doors: parseInt(doors) || 4,
+//       AUX: AUX === "true" || AUX === true,
+//       parkingSensors: parkingSensors === "true" || parkingSensors === true,
+//       airBags: airBags === "true" || airBags === true,
+//       fogLamps: fogLamps === "true" || fogLamps === true,
+//       cruiseControl: cruiseControl === "true" || cruiseControl === true,
+//       MP3Player: MP3Player === "true" || MP3Player === true,
+//       USB: USB === "true" || USB === true,
+//       passengersCapacity: parseInt(passengersCapacity) || 4,
+//       branch: [findBranch._id],
+//     });
+
+//     // Save car
+//     const newCarCreated = await createCar.save();
+//     if (!newCarCreated) {
+//       return res.status(500).send("Failed to add car details");
+//     }
+
+//     return res.status(201).send(newCarCreated);
+//   } catch (error) {
+//     console.log("Something went wrong", error);
+//     res.status(500).send("Failed to add car details");
+//   }
+// };
+  
+
 
 // UPDATE CAR
 export const updateCar = async (req, res) => {
@@ -250,7 +515,8 @@ export const getCarsByType = async (req, res) => {
     try {
         const { type } = req.params;
         console.log(req.params);
-        const cars = await Car.find({ type }).populate('features').populate('branch'); // Populate features if it's a reference in your model
+        // const cars = await Car.find({ type }).populate('features').populate('branch'); // Populate features if it's a reference in your model
+        const cars = await Car.find({ type: { $regex: type.replace('-', ' '), $options: 'i' } }).populate('features').populate('branch');
         res.json(cars);
     } 
     catch (error) {

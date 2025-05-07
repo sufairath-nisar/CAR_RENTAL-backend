@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const onlinepaymentSchema = new mongoose.Schema({
+const onlinePaymentSchema = new mongoose.Schema({
   razorpay_order_id: {
     type: String,
     required: true,
@@ -19,4 +19,4 @@ const onlinepaymentSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("onlinePayment", onlinepaymentSchema);
+export default mongoose.model("onlinePayment", onlinePaymentSchema);

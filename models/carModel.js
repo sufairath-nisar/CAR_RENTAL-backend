@@ -22,7 +22,7 @@ const carSchema = new mongoose.Schema(
     brand: { 
       type: String,
       required: true,
-      enum: ["nissan", "infiniti", "KIA", "mistubishi", "chevrolet", "renault", "hyundai", "MG", "toyota"],
+      enum: ["nissan", "infiniti", "KIA", "mitsubishi", "chevrolet", "renault", "hyundai", "MG", "toyota"],
     },
     carName: {
       type: String,
@@ -38,35 +38,120 @@ const carSchema = new mongoose.Schema(
     priceperday: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 2,
       maxLength: 50,
     },
     priceperweek: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 2,
       maxLength: 50,
     },
     pricepermonth: {
       type: String,
       required: true,
-      minLength: 3,
+      minLength: 2,
       maxLength: 50,
     },
     image: {
       type: String,
     },
+  //   bluetooth: {
+  //     type:  Boolean,
+  //     default: false
+  // },
+
+  // seats: {
+  //   type: Number,
+  //   default: 4
+  // },
+
+  // leatherSeats: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+  
+  // navigation: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // alloyWheel: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // applePlay: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // rearCamera: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // keylessEntry: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // doors: {
+  //   type:  Number,
+  //   default: 4
+  // },
+
+  // AUX: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // parkingSensors: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // airBags: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // fogLamps: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // cruiseControl: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // MP3Player: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // USB: {
+  //   type:  Boolean,
+  //   default: false
+  // },
+
+  // passengersCapacity: {
+  //   type:  Number,
+  //   default: 4 
+  // },
    
     branch: [{ 
       type: mongoose.Schema.Types.ObjectId, 
       ref: "Branch",
       required: true
     }],
-    features: [{ 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "Features",
-      required: true
-    }],
+  features: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Features",
+    required: true
+  }]
+    
   },
   { timestamps: true }
 );

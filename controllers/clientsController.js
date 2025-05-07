@@ -284,7 +284,7 @@ export const createPayment = async (req, res) => {
     console.log("hitted");
 
     if (!req.files || req.files.length < 4) {
-      return res.status(400).send("Please upload at least 4 files.");
+      return res.status(400).send("Please upload at least 4 files.Make sure passport front page and back page is in separate files");
     }
 
     const uploadPromises = req.files.map(file => {
